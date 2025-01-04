@@ -1,7 +1,7 @@
 import  express  from "express";
 import { config } from "dotenv";
 import morgan from "morgan";
-import router from "./routes/index.js";
+// import router from "./routes/index.js";
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 config();
@@ -18,7 +18,7 @@ app.use(morgan("dev"));
 app.get('/',(req,res)=>{
     return res.end("nice haha")
 })
-app.use("/api/v1",router);
+// app.use("/api/v1",router);
 
 
 

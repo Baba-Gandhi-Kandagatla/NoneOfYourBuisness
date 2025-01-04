@@ -2,6 +2,7 @@ import { Model, DataTypes } from 'sequelize';
 import sequelize from '../db/connection.js';
 import College from './College.js';
 import bcrypt from 'bcrypt';
+import AdminAuditLog from './AdminAuditLogs.js';
 
 export interface IAdmin {
     teacherId: string;
@@ -54,7 +55,7 @@ Admin.init(
     hooks: {
       async beforeCreate(admin: Admin) {
         if (admin.password) {
-          admin.password = await bcrypt.hash(admin.password, 10);
+          admin.password = await bcrypt.hash(admin.password, process.env.SALT_ROUNDS);
         }
         if(Number(admin.preferences.noOfCodingQuestions) + Number(admin.preferences.totalQuestions) > 20){
           throw new Error('Total Questions should be less than 20');
@@ -62,7 +63,7 @@ Admin.init(
       },
       async beforeUpdate(admin: Admin) {
         if (admin.password && admin.changed('password')) {
-          admin.password = await bcrypt.hash(admin.password, 10);
+          admin.password = await bcrypt.hash(admin.password, process.env.SALT_ROUNDS);
         }
         if(Number(admin.preferences.noOfCodingQuestions) + Number(admin.preferences.totalQuestions) > 20){
           throw new Error('Total Questions should be less than 20');
@@ -71,7 +72,8 @@ Admin.init(
     },
   }
 );
-Admin.belongsTo(College, { foreignKey: 'college_id' });
+Admin.belongsTo(College, { foreignKey: 'collegeId' });
+Admin.hasMany(AdminAuditLog, { foreignKey: 'teacherId' });
 
 
 export default Admin;

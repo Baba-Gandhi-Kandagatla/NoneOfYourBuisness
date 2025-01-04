@@ -3,36 +3,36 @@ import sequelize from '../db/connection.js';
 import Student from './Student.js';
 
 export interface IResume {
-  id: bigint;
-  resume_loc: string;
-  resume_context: string;
-  roll_number: string;
+  resumeId: bigint;
+  resumeLocation: string;
+  resumeContext: string;
+  rollNumber: string;
 }
 
 class Resume extends Model<IResume> implements IResume {
-  public id!: bigint;
-  public resume_loc!: string;
-  public resume_context!: string;
-  public roll_number!: string;
+  public resumeId!: bigint;
+  public resumeLocation!: string;
+  public resumeContext!: string;
+  public rollNumber!: string;
 }
 
 Resume.init(
   {
-    id: {
+    resumeId: {
       type: DataTypes.BIGINT,
       autoIncrement: true,
       primaryKey: true,
     },
-    resume_loc: {
+    resumeLocation: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    resume_context: {
+    resumeContext: {
       type: DataTypes.TEXT,
       allowNull: false,
       defaultValue: ''
     },
-    roll_number: {
+    rollNumber: {
       type: DataTypes.STRING,
       allowNull: false,
     },

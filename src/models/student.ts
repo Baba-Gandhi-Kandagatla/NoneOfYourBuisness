@@ -5,32 +5,30 @@ import College from './College.js';
 import bcrypt from 'bcrypt';
 
 export interface IStudent {
-  roll_number: string;
+  rollNumber: string;
   username: string;
   year: number;
   semester: 1 | 2;
-  department_id: bigint;
-  section: String;
+  departmentId: bigint;
   password: string;
-  college_id: bigint;
+  collegeId: bigint;
   attendance: number;
 }
 
 class Student extends Model<IStudent> implements IStudent {
-  public roll_number!: string;
+  public rollNumber!: string;
   public username!: string;
   public year!: number;
   public semester!: 1 | 2;
-  public department_id!: bigint;
-  public section!: String;
+  public departmentId!: bigint;
   public password!: string;
-  public college_id!: bigint;
+  public collegeId!: bigint;
   public attendance!: number;
 }
 
 Student.init(
   {
-    roll_number: {
+    rollNumber: {
       type: DataTypes.STRING,
       allowNull: false,
       primaryKey: true,
@@ -47,19 +45,15 @@ Student.init(
       type: DataTypes.ENUM('1', '2'),
       allowNull: false,
     },
-    department_id: {
+    departmentId: {
       type: DataTypes.BIGINT,
-      allowNull: false,
-    },
-    section: {
-      type: DataTypes.STRING,
       allowNull: false,
     },
     password: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    college_id: {
+    collegeId: {
       type: DataTypes.BIGINT,
       allowNull: false,
     },
@@ -76,12 +70,12 @@ Student.init(
     hooks:{
       async beforeCreate(student: Student) {
         if (student.password) {
-          student.password = await bcrypt.hash(student.password, 10);
+          student.password = await bcrypt.hash(student.password, process.env.SALT_ROUNDS || 10);
         }
       },
       async beforeUpdate(student: Student) {
         if (student.password && student.changed('password')) {
-          student.password = await bcrypt.hash(student.password, 10);
+          student.password = await bcrypt.hash(student.password, process.env.SALT_ROUNDS || 10);
         }
       }
     }

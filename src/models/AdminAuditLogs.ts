@@ -44,8 +44,8 @@ AdminAuditLog.init(
   },
   {
     sequelize,
-    modelName: 'StudentAuditLog',
-    tableName: 'studentAuditLogs',
+    modelName: 'AtudentAuditLog',
+    tableName: 'atudentAuditLogs',
   }
 );
 export default AdminAuditLog;

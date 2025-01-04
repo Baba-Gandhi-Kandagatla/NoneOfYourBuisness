@@ -40,7 +40,6 @@ Batch.init(
     sequelize,
     modelName: 'Batch',
     tableName: 'batch',
-    //add a hook to uppercase the name
     hooks: {
       beforeCreate: async (batch: Batch) => {
         if(batch.batchName){

@@ -17,13 +17,6 @@ Admin.belongsTo(College, { foreignKey: "collegeId" });
 Admin.hasMany(AdminAuditLog, { foreignKey: "adminId" });
 AdminAuditLog.belongsTo(Admin, { foreignKey: "adminId" });
 
-// batch to college
-// college to batch
-// batch to interview
-// interview to batch
-// student to batch
-// batch to student
-
 Batch.belongsTo(College, { foreignKey: "collegeId" });
 Batch.hasMany(Student, { foreignKey: "batchId" });
 Batch.hasMany(Interview, { foreignKey: "batchId" });

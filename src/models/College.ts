@@ -35,13 +35,13 @@ College.init(
     tableName: 'college',
     hooks: {
       beforeCreate: async (college:College) => {
-        if(college.collegeName){
-          college.collegeName = college.collegeName.toUpperCase();
+        if(college.dataValues.collegeName){
+          college.dataValues.collegeName = college.dataValues.collegeName.toUpperCase();
         }
       },
       beforeUpdate: async (college:College) => {
-        if(college.collegeName && college.changed('collegeName')){
-          college.collegeName = college.collegeName.toUpperCase();
+        if(college.dataValues.collegeName && college.changed('collegeName')){
+          college.dataValues.collegeName = college.dataValues.collegeName.toUpperCase();
         }
       },
     },

@@ -42,13 +42,13 @@ Batch.init(
     tableName: 'batch',
     hooks: {
       beforeCreate: async (batch: Batch) => {
-        if(batch.batchName){
-          batch.batchName = batch.batchName.toUpperCase();
+        if(batch.dataValues.batchName){
+          batch.dataValues.batchName = batch.dataValues.batchName.toUpperCase();
         }
       },
       beforeUpdate: async (batch: Batch) => {
-        if(batch.batchName && batch.changed('batchName')){
-          batch.batchName = batch.batchName.toUpperCase();
+        if(batch.dataValues.batchName && batch.changed('batchName')){
+          batch.dataValues.batchName = batch.dataValues.batchName.toUpperCase();
         }
       },
     }

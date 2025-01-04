@@ -40,13 +40,13 @@ Department.init(
     tableName: 'department',
     hooks: {
       beforeCreate: async (department:Department) => {
-        if(department.departmentName){
-          department.departmentName = department.departmentName.toUpperCase();
+        if(department.dataValues.departmentName){
+          department.dataValues.departmentName = department.dataValues.departmentName.toUpperCase();
         }
       },
       beforeUpdate: async (department:Department) => {
-        if(department.departmentName && department.changed('departmentName')){
-          department.departmentName = department.departmentName.toUpperCase();
+        if(department.dataValues.departmentName && department.changed('departmentName')){
+          department.dataValues.departmentName = department.dataValues.departmentName.toUpperCase();
         }
       },
     }

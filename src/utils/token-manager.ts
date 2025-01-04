@@ -1,7 +1,5 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-const NODE_ENV = process.env.NODE_ENV;
-
 const COOKIE_NAME = process.env.COOKIE_NAME;
 const JWT_SECRET = process.env.JWT_SECRET as string;
 const NODE_ENV = process.env.NODE_ENV;
@@ -79,21 +77,3 @@ export const verifyTokenSuperAdmin = (req: Request, res: Response, next: NextFun
   verifyJWT(req, res, next, "superadmin");
 };
 
-export const clearAndSetCookie = (res: Response, token: string) => {
-  res.clearCookie(COOKIE_NAME, {
-    httpOnly: true,
-    domain: "localhost",
-    signed: true,
-    path: "/",
-  });
-
-  const cookieOptions = {
-    httpOnly: true,
-    signed: true,
-    secure: NODE_ENV === 'production',
-    maxAge: 3600000,
-    path: "/"
-  };
-
-  res.cookie(COOKIE_NAME, token, cookieOptions);
-};

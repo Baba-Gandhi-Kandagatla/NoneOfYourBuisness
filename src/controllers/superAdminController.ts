@@ -5,6 +5,7 @@ import College from '../models/College.js';
 import { createToken } from '../utils/token-manager.js';
 import bcrypt from 'bcrypt';
 import { clearAndSetCookie } from '../utils/token-manager.js';
+import exp from 'constants';
 
 export const login = async (req: Request, res: Response) => {
     const {superAdminId, password} = req.body;
@@ -78,3 +79,87 @@ export const addAdmin = async (req: Request, res: Response) => {
         res.status(500).json({error: 'Internal server error'});
     }
 };
+
+export const getColleges = async (req: Request, res: Response) => {
+    try {
+        const colleges = await College.findAll();
+        res.status(200).json(colleges);
+    } catch (error) {
+        console.error('Colleges get error:', error);
+        res.status(500).json({error: 'Internal server error'});
+    }
+};
+
+export const getAdminsByCollege = async (req: Request, res: Response) => {
+    const collageId = req.params.collegeId;
+    try {
+        const admins = await Admin.findAll(
+            {
+                where: {
+                    collegeId: collageId
+                }
+            }
+        );
+        res.status(200).json(admins);
+    } catch (error) {
+        console.error('Admins get error:', error);
+        res.status(500).json({error: 'Internal server error'});
+    }
+};
+
+export const getSuperAdmins = async (req: Request, res: Response) => {
+    try {
+        const superAdmins = await SuperAdmin.findAll();
+        res.status(200).json(superAdmins);
+    } catch (error) {
+        console.error('SuperAdmins get error:', error);
+        res.status(500).json({error: 'Internal server error'});
+    }
+};
+
+
+export const deleteCollege = async (req: Request, res: Response) => {
+    const collegeId = req.params.collegeId;
+    try {
+        const college = await College.findByPk(collegeId);
+        if (!college) {
+            return res.status(404).json({error: 'College not found'});
+        }
+        await college.destroy();
+        res.status(200).json({message: 'College deleted successfully'});
+    } catch (error) {
+        console.error('College delete error:', error);
+        res.status(500).json({error: 'Internal server error'});
+    }
+};
+
+export const deleteAdmin = async (req: Request, res: Response) => {
+    const adminId = req.params.adminId;
+    try {
+        const admin = await Admin.findByPk(adminId);
+        if (!admin) {
+            return res.status(404).json({error: 'Admin not found'});
+        }
+        await admin.destroy();
+        res.status(200).json({message: 'Admin deleted successfully'});
+    } catch (error) {
+        console.error('Admin delete error:', error);
+        res.status(500).json({error: 'Internal server error'});
+    }
+};
+
+export const deleteSuperAdmin = async (req: Request, res: Response) => {
+    const superAdminId = req.params.superAdminId;
+    try {
+        const superAdmin = await SuperAdmin.findByPk(superAdminId);
+        if (!superAdmin) {
+            return res.status(404).json({error: 'SuperAdmin not found'});
+        }
+        await superAdmin.destroy();
+        res.status(200).json({message: 'SuperAdmin deleted successfully'});
+    } catch (error) {
+        console.error('SuperAdmin delete error:', error);
+        res.status(500).json({error: 'Internal server error'});
+    }
+};
+

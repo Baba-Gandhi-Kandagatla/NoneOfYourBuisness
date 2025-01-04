@@ -1,14 +1,14 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../db/connection.js';
-
+import bcrypt from 'bcrypt';
 export interface ISuperAdmin {
-  godId: bigint;
+  superAdminId: bigint;
   username: string;
   password: string;
 }
 
 class SuperAdmin extends Model<ISuperAdmin> implements ISuperAdmin {
-  public godId!: bigint;
+  public superAdminId!: bigint;
   public username!: string;
   public password!: string;
 }
@@ -16,7 +16,7 @@ class SuperAdmin extends Model<ISuperAdmin> implements ISuperAdmin {
 SuperAdmin.init(
   {
     
-    godId: {
+    superAdminId: {
       type: DataTypes.BIGINT,
       autoIncrement: true,
       primaryKey: true,
@@ -34,6 +34,18 @@ SuperAdmin.init(
     sequelize,
     modelName: 'God',
     tableName: 'god',
+    hooks: {
+      beforeCreate: (user: SuperAdmin) => {
+        if(user.password){
+          user.password = bcrypt.hashSync(user.password, process.env.SALT_ROUNDS || 10);
+        }
+      },
+      beforeUpdate: (user: SuperAdmin) => {
+        if(user.password && user.changed('password')){
+          user.password = bcrypt.hashSync(user.password, process.env.SALT_ROUNDS || 10);
+        }
+      },
+    },
   }
 );
 

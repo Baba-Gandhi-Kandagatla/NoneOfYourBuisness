@@ -4,16 +4,16 @@ import Student from './Student.js';
 
 export interface IResume {
   resumeId: bigint;
+  rollNumber: string;
   resumeLocation: string;
   resumeContext: string;
-  rollNumber: string;
 }
 
 class Resume extends Model<IResume> implements IResume {
   public resumeId!: bigint;
+  public rollNumber!: string;
   public resumeLocation!: string;
   public resumeContext!: string;
-  public rollNumber!: string;
 }
 
 Resume.init(
@@ -22,6 +22,10 @@ Resume.init(
       type: DataTypes.BIGINT,
       autoIncrement: true,
       primaryKey: true,
+    },
+    rollNumber: {
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     resumeLocation: {
       type: DataTypes.STRING,
@@ -32,10 +36,6 @@ Resume.init(
       allowNull: false,
       defaultValue: ''
     },
-    rollNumber: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
   },
   {
     sequelize,
@@ -44,6 +44,5 @@ Resume.init(
   }
 );
 
-Resume.belongsTo(Student, { foreignKey: 'roll_number' });
 
 export default Resume;

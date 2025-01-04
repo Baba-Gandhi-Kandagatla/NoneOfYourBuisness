@@ -6,6 +6,7 @@ export interface IInterviewExchange {
   InterviewExchangeId: bigint;
   interviewInstanceId: bigint;
   question: string;
+  reframedQuestion: string;
   code: string;
   response: string;
   marks: number;
@@ -16,6 +17,7 @@ class InterviewExchange extends Model<IInterviewExchange> implements IInterviewE
   public InterviewExchangeId!: bigint;
   public interviewInstanceId!: bigint;
   public question!: string;
+  public reframedQuestion!: string;
   public code!: string;
   public response!: string;
   public marks!: number;
@@ -42,6 +44,10 @@ InterviewExchange.init(
     question: {
       type: DataTypes.TEXT,
       allowNull: false,
+    },
+    reframedQuestion: {
+      type: DataTypes.TEXT,
+      allowNull: true,
     },
     code: {
       type: DataTypes.TEXT,

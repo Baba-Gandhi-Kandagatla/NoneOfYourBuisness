@@ -1,14 +1,11 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../db/connection.js';
-import Department from './Department.js';
-import College from './College.js';
 import bcrypt from 'bcrypt';
 
 export interface IStudent {
   rollNumber: string;
-  username: string;
-  year: number;
-  semester: 1 | 2;
+  studentname: string;
+  batchId: bigint;
   departmentId: bigint;
   password: string;
   collegeId: bigint;
@@ -17,9 +14,8 @@ export interface IStudent {
 
 class Student extends Model<IStudent> implements IStudent {
   public rollNumber!: string;
-  public username!: string;
-  public year!: number;
-  public semester!: 1 | 2;
+  public studentname!: string;
+  public batchId: bigint;
   public departmentId!: bigint;
   public password!: string;
   public collegeId!: bigint;
@@ -33,16 +29,12 @@ Student.init(
       allowNull: false,
       primaryKey: true,
     },
-    username: {
+    studentname: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    year: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    semester: {
-      type: DataTypes.ENUM('1', '2'),
+    batchId: {
+      type: DataTypes.BIGINT,
       allowNull: false,
     },
     departmentId: {
@@ -60,7 +52,11 @@ Student.init(
     attendance: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: 0,
+      defaultValue: 100,
+      validate: {
+        min: 0,
+        max: 100,
+      },
     },
   },
   {
@@ -70,19 +66,16 @@ Student.init(
     hooks:{
       async beforeCreate(student: Student) {
         if (student.password) {
-          student.password = await bcrypt.hash(student.password, process.env.SALT_ROUNDS || 10);
+          student.password = await bcrypt.hashSync(student.password, process.env.SALT_ROUNDS || 10);
         }
       },
       async beforeUpdate(student: Student) {
         if (student.password && student.changed('password')) {
-          student.password = await bcrypt.hash(student.password, process.env.SALT_ROUNDS || 10);
+          student.password = await bcrypt.hashSync(student.password, process.env.SALT_ROUNDS || 10);
         }
       }
     }
   }
 );
-
-Student.belongsTo(Department, { foreignKey: 'department_id' });
-Student.belongsTo(College, { foreignKey: 'college_id' });
 
 export default Student;

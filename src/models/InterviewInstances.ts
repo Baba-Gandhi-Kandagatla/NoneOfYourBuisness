@@ -1,11 +1,8 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../db/connection.js';
-import Interview from './Interview.js';
-import { json } from 'sequelize';
-
 export interface IFeedBack{
-  strengths: string,
-  weaknesses: string,
+  strengths: string[],
+  weaknesses: string[],
   summary: string,
 }
 export interface IInterviewInstance {
@@ -51,10 +48,20 @@ InterviewInstance.init(
       type: DataTypes.JSONB,
       allowNull: true,
       defaultValue: null,
+      validate: {
+        isValidFeedback(value: any) {
+          if (value) {
+            if (!Array.isArray(value.strengths) || !Array.isArray(value.weaknesses)) {
+              throw new Error('Strengths and weaknesses must be arrays of strings');
+            }
+          }
+        }
+      }
     },
     status: {
       type: DataTypes.ENUM('submitted', 'not submitted'),
       allowNull: false,
+      defaultValue: 'not submitted',
     },
   },
   {

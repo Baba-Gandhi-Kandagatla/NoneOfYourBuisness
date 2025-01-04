@@ -1,7 +1,5 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../db/connection.js';
-import Interview from './Interview.js';
-import Department from './Department.js';
 
 export interface IInterviewToDepartment {
   interviewToDepartmentId: bigint;

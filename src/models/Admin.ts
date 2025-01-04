@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 
 export interface IAdmin {
     teacherId: string;
-    name: string;
+    adminName: string;
     password: string;
     collegeId: bigint;
     preferences: IAdminPreferences;
@@ -18,7 +18,7 @@ export interface IAdminPreferences {
 
 class Admin extends Model<IAdmin> implements IAdmin {
   public teacherId!: string;
-  public name!: string;
+  public adminName!: string;
   public password!: string;
   public collegeId!: bigint;
   public preferences!: IAdminPreferences;
@@ -34,7 +34,7 @@ Admin.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    name: {
+    adminName: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -54,7 +54,7 @@ Admin.init(
     hooks: {
       async beforeCreate(admin: Admin) {
         if (admin.password) {
-          admin.password = await bcrypt.hash(admin.password, 10);
+          admin.password = await bcrypt.hashSync(admin.password, 10);
         }
         if(Number(admin.preferences.noOfCodingQuestions) + Number(admin.preferences.totalQuestions) > 20){
           throw new Error('Total Questions should be less than 20');
@@ -62,7 +62,7 @@ Admin.init(
       },
       async beforeUpdate(admin: Admin) {
         if (admin.password && admin.changed('password')) {
-          admin.password = await bcrypt.hash(admin.password, 10);
+          admin.password = await bcrypt.hashSync(admin.password, 10);
         }
         if(Number(admin.preferences.noOfCodingQuestions) + Number(admin.preferences.totalQuestions) > 20){
           throw new Error('Total Questions should be less than 20');
@@ -71,7 +71,6 @@ Admin.init(
     },
   }
 );
-Admin.belongsTo(College, { foreignKey: 'college_id' });
 
 
 export default Admin;

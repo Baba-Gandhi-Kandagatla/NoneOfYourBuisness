@@ -2,29 +2,29 @@ import { Model, DataTypes } from 'sequelize';
 import sequelize from '../db/connection.js';
 
 export interface IDepartment {
-  id: bigint;
-  name: string;
-  college_id: bigint;
+  departmentId: bigint;
+  departmentName: string;
+  collegeId: bigint;
 }
 
 class Department extends Model<IDepartment> implements IDepartment {
-  public id!: bigint;
-  public name!: string;
-  public college_id!: bigint;
+  public departmentId!: bigint;
+  public departmentName!: string;
+  public collegeId!: bigint;
 }
 
 Department.init(
   {
-    id: {
+    departmentId: {
       type: DataTypes.BIGINT,
       autoIncrement: true,
       primaryKey: true,
     },
-    name: {
+    departmentName: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    college_id: {
+    collegeId: {
       type: DataTypes.BIGINT,
       allowNull: false,
     }

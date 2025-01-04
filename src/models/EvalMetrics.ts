@@ -1,23 +1,24 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../db/connection.js';
-import Student from './Student.js';
 
 export interface IEvalMetrics {
   evalMetricsId: bigint;
+  rollNumber: string;
+  count: number;
   problemSolving: number;
   codeQuality: number;
   debugging: number;
-  rollNumber: string;
-  count: number;
+  testing: number;
 }
 
 class EvalMetrics extends Model<IEvalMetrics> implements IEvalMetrics {
   public evalMetricsId!: bigint;
+  public rollNumber!: string;
+  public count!: number;
   public problemSolving!: number;
   public codeQuality!: number;
   public debugging!: number;
-  public rollNumber!: string;
-  public count!: number;
+  public testing!: number;
 }
 
 EvalMetrics.init(
@@ -26,6 +27,14 @@ EvalMetrics.init(
       type: DataTypes.BIGINT,
       autoIncrement: true,
       primaryKey: true,
+    },
+    rollNumber: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    count: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
     },
     problemSolving: {
       type: DataTypes.INTEGER,
@@ -39,11 +48,7 @@ EvalMetrics.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    rollNumber: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    count: {
+    testing: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },

@@ -3,13 +3,13 @@ import sequelize from '../db/connection.js';
 
 export interface ICollege {
   collegeId: bigint;
-  name: string;
+  collegeName: string;
   defaultStudentPassword: string;
 }
 
 class College extends Model<ICollege> implements ICollege {
   public collegeId!: bigint;
-  public name!: string;
+  public collegeName!: string;
   public defaultStudentPassword!: string;
 }
 
@@ -20,7 +20,7 @@ College.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    name: {
+    collegeName: {
       type: DataTypes.STRING,
       allowNull: false,
     },

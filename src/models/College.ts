@@ -2,20 +2,20 @@ import { Model, DataTypes } from 'sequelize';
 import sequelize from '../db/connection.js';
 
 export interface ICollege {
-  id: bigint;
+  collegeId: bigint;
   name: string;
-  defaultPassword: string;
+  defaultStudentPassword: string;
 }
 
 class College extends Model<ICollege> implements ICollege {
-  public id!: bigint;
+  public collegeId!: bigint;
   public name!: string;
-  public defaultPassword!: string;
+  public defaultStudentPassword!: string;
 }
 
 College.init(
   {
-    id: {
+    collegeId: {
       type: DataTypes.BIGINT,
       autoIncrement: true,
       primaryKey: true,
@@ -24,7 +24,7 @@ College.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    defaultPassword: {
+    defaultStudentPassword: {
       type: DataTypes.STRING,
       allowNull: false,
     },

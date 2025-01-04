@@ -14,7 +14,6 @@ export interface IAdmin {
 export interface IAdminPreferences {
   totalQuestions:Number;
   noOfCodingQuestions:Number;
-  defaultPassword: string;
 }
 
 class Admin extends Model<IAdmin> implements IAdmin {

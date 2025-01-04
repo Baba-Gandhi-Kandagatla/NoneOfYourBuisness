@@ -59,31 +59,31 @@ Admin.init(
     tableName: 'admin',
     hooks: {
       async beforeCreate(admin: Admin) {
-        if (admin.password) {
-          admin.password = await bcrypt.hashSync(admin.password,  process.env.SALT_ROUNDS || 10);
+        if (admin.dataValues.password) {
+          admin.dataValues.password = bcrypt.hashSync(admin.dataValues.password,  parseInt(process.env.SALT_ROUNDS) || 10);
         }
-        if(Number(admin.preferences.noOfCodingQuestions) + Number(admin.preferences.totalQuestions) > 20){
+        if(Number(admin.dataValues.preferences.noOfCodingQuestions) + Number(admin.dataValues.preferences.totalQuestions) > 20){
           throw new Error('Total Questions should be less than 20');
         }
-        if(admin.teacherId){
-          admin.teacherId = admin.teacherId.toUpperCase(); 
+        if(admin.dataValues.teacherId){
+          admin.dataValues.teacherId = admin.dataValues.teacherId.toUpperCase(); 
         }
-        if(admin.adminName){
-          admin.adminName = admin.adminName.toUpperCase();
+        if(admin.dataValues.adminName){
+          admin.dataValues.adminName = admin.dataValues.adminName.toUpperCase();
         }
       },
       async beforeUpdate(admin: Admin) {
-        if (admin.password && admin.changed('password')) {
-          admin.password = await bcrypt.hashSync(admin.password,  process.env.SALT_ROUNDS || 10);
+        if (admin.dataValues.password && admin.changed('password')) {
+          admin.dataValues.password = await bcrypt.hashSync(admin.dataValues.password,  parseInt(process.env.SALT_ROUNDS )|| 10);
         }
-        if(Number(admin.preferences.noOfCodingQuestions) + Number(admin.preferences.totalQuestions) > 20){
+        if(Number(admin.dataValues.preferences.noOfCodingQuestions) + Number(admin.dataValues.preferences.totalQuestions) > 20){
           throw new Error('Total Questions should be less than 20');
         }
-        if(admin.teacherId){
-          admin.teacherId = admin.teacherId.toUpperCase(); 
+        if(admin.dataValues.teacherId){
+          admin.dataValues.teacherId = admin.dataValues.teacherId.toUpperCase(); 
         }
-        if(admin.adminName){
-          admin.adminName = admin.adminName.toUpperCase();
+        if(admin.dataValues.adminName){
+          admin.dataValues.adminName = admin.dataValues.adminName.toUpperCase();
         }
       },
     },

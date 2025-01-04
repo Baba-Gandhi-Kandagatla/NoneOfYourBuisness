@@ -11,8 +11,7 @@ const sequelize = new Sequelize(
         host: process.env.DB_HOST,     
         dialect: 'postgres',           
         port: Number(process.env.DB_PORT), 
-        logging: false,         
-        //logging:console.log,      
+        logging: process.env.SEQUELIZE_LOGGING as string === "true",      
     }
 );
 

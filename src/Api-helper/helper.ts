@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 
+
 const openai = 
 new OpenAI({
     apiKey: process.env.O1_KEY,
@@ -31,58 +32,66 @@ const callOpenAI = async (messages: any[]) => {
 };
 
 
-export const simpleTextGen = async (text: string) => {
+export const generateResumeSummary = async (text: string) => {
     const messages = [
         { 
             role: 'system', 
-            content: 'You are an AI assistant summarizing resumes into concise 2-3 line summaries.' 
+            content: 'You are an AI assistant that summarizes resumes into concise 2-3 line summaries, highlighting key skills, experience, and achievements.' 
         },
         {
             role: 'user',
-            content: `Summarize the following resume in 2-3 lines, focusing on key skills, experience, and achievements: "${text}".`
+            content: `Summarize the following resume in 2-3 lines: "${text}". Return the result in JSON format: {"summary": "<summary>"}.`
         }
     ];
 
-    const summary = await callOpenAI(messages);
-    return summary.trim();
+    try {
+        const summary = await callOpenAI(messages);
+        return JSON.parse(summary).summary.trim();
+    } catch (error) {
+        console.error('Error generating resume summary:', error);
+        return 'Error generating summary.';
+    }
 };
 
-
-export const getFeedback = async (question: string, response: string) => {
+export const provideInterviewFeedback = async (question: string, response: string) => {
     const feedbackMessages = [
         { 
             role: 'system', 
-            content: 'You are an AI assistant providing constructive interview feedback based on the given question and response under 500 characters.' 
+            content: 'You are an AI assistant providing constructive interview feedback based on the given question and response.' 
         },
         {
             role: 'user',
             content: `Provide detailed feedback for the following question and response.
             Question: "${question}"
             Response: "${response}".
-            Focus on strengths and areas for improvement.`
+            Focus on strengths and areas for improvement. Return the result in JSON format: {"feedback": "<feedback>"}.`
         },
     ];
 
-    const feedback = await callOpenAI(feedbackMessages);
+    try {
+        const feedback = await callOpenAI(feedbackMessages);
+        const marksMessages = [
+            { 
+                role: 'system', 
+                content: 'You are an AI assistant assigning marks to interview responses.' 
+            },
+            {
+                role: 'user',
+                content: `Assign marks out of 10 in the format "Marks: X/10" for the response to the question: "${question}". The response was: "${response}". Return the result in JSON format: {"marks": <marks>}.`
+            },
+        ];
 
-    const marksMessages = [
-        { 
-            role: 'system', 
-            content: 'You are an AI assistant assigning marks to interview responses.' 
-        },
-        {
-            role: 'user',
-            content: `Assign marks out of 10 in the format "Marks: X/10" (just the marks) for the response to the question: "${question}". The response was: "${response}".`
-        },
-    ];
+        const marksResponse = await callOpenAI(marksMessages);
+        const marks = JSON.parse(marksResponse).marks;
 
-    const marksResponse = await callOpenAI(marksMessages);
-    const marks = parseInt(marksResponse.match(/\d+/)?.[0] || '0', 10);
-
-    return { feedback: feedback.trim(), marks };
+        return { feedback: JSON.parse(feedback).feedback.trim(), marks };
+    } catch (error) {
+        console.error('Error providing interview feedback:', error);
+        return { feedback: 'Error generating feedback.', marks: 0 };
+    }
 };
 
-export const reframeQuestion = async (question: string) => {
+export const rephraseInterviewQuestion = async (question: string) => {
     const messages = [
         { 
             role: 'system', 
@@ -90,24 +99,20 @@ export const reframeQuestion = async (question: string) => {
         },
         {
             role: 'user',
-            content: `Rephrase the following question to make it clearer and more concise: "${question}". Return the result in the format:
-            Question: "<rephrased question>".`
+            content: `Rephrase the following question to make it clearer and more concise: "${question}". Return the result in JSON format: {"rephrased_question": "<rephrased question>"}.`
         }
     ];
 
-    const response = await callOpenAI(messages);
-    const pattern = /Question:\s*"(.+?)"/;
-    const match = response.match(pattern);
-
-    if (match) {
-        return match[1].trim();
-    } else {
-        return "Could not rephrase the question.";
+    try {
+        const response = await callOpenAI(messages);
+        return JSON.parse(response).rephrased_question.trim();
+    } catch (error) {
+        console.error('Error rephrasing interview question:', error);
+        return 'Error rephrasing question.';
     }
 };
 
-export const Q1 = async (resume_context: string, subject: string, topic: string) => {
-    console.log("Q1")
+export const generateInterviewQuestion = async (resume_context: string, subject: string, topic: string) => {
     const messages = [
         { 
             role: 'system', 
@@ -117,24 +122,20 @@ export const Q1 = async (resume_context: string, subject: string, topic: string)
             role: 'user',
             content: `Generate a specific interview question in the format: 
             Question: "<interview question>" for a candidate with experience in ${resume_context}, focusing on the subject ${subject}, and specifically related to the topic ${topic}. 
-            The question should assess the candidate's understanding or practical skills in this area.`
+            The question should assess the candidate's understanding or practical skills in this area. Return the result in JSON format: {"question": "<interview question>"}.`
         }
     ];
 
-    const response = await callOpenAI(messages);
-    const pattern = /Question:\s*"(.+?)"/;
-    const match = response.match(pattern);
-
-    if (match) {
-        return match[1].trim();
-    } else {
-        return "Could not generate a valid question.";
+    try {
+        const response = await callOpenAI(messages);
+        return JSON.parse(response).question.trim();
+    } catch (error) {
+        console.error('Error generating interview question:', error);
+        return 'Error generating question.';
     }
 };
 
-
-
-export const genNextQuestion = async (resume_context: string, subject: string, topic: string, interviewExchanges: any[]) => {
+export const generateNextInterviewQuestion = async (resume_context: string, subject: string, topic: string, interviewExchanges: any[]) => {
     const messages = [
         { 
             role: 'system', 
@@ -149,28 +150,20 @@ export const genNextQuestion = async (resume_context: string, subject: string, t
             - If the candidate struggled: "Ask a simpler question to help them build confidence."
             - Focus on practical applications or understanding of fundamental concepts.
 
-            Return the question in the format:
-            Question: "<question text>"
-            `
+            Return the question in JSON format: {"question": "<question text>"}.`
         }
     ];
 
-    const response = await callOpenAI(messages);
-    const pattern = /Question:\s*"(.+?)"/;
-    const match = response.match(pattern);
-
-    if (match) {
-        return match[1].trim();
-    } else {
-        return "Could not generate a valid question.";
+    try {
+        const response = await callOpenAI(messages);
+        return JSON.parse(response).question.trim();
+    } catch (error) {
+        console.error('Error generating next interview question:', error);
+        return 'Error generating next question.';
     }
 };
 
-
-
-
-
-export const getFinalFeedback = async (resume_context: string, subject: string, topic: string, interviewExchanges: any[]) => {
+export const provideFinalInterviewFeedback = async (resume_context: string, subject: string, topic: string, interviewExchanges: any[]) => {
     const messages = [
         { role: 'system', content: 'You are an AI assistant providing comprehensive interview feedback. Be clear, concise, and objective.' },
         {
@@ -183,42 +176,21 @@ export const getFinalFeedback = async (resume_context: string, subject: string, 
 
             Ensure that:
             1. Strengths and weaknesses are clearly listed.
-            2. The summary is no more than 2-3 sentences.`
+            2. The summary is no more than 2-3 sentences.
+            Return the result in JSON format: {"strengths": "<strengths>", "weaknesses": "<weaknesses>", "summary": "<summary>"}.`
         }
     ];
 
-    const pattern = /Strengths:\s*(.+?)\nWeaknesses:\s*(.+?)\nSummary:\s*(.+)/s;
-    const feedback = await callOpenAI(messages);
-
-    const match = feedback.match(pattern);
-    if (match) {
-        const result = {
-            strengths: match[1].trim(),
-            weaknesses: match[2].trim(),
-            summary: match[3].trim()
-        };
-        return result;
-    } else {
-        console.log(feedback,match);
-        return {
-            strengths: "Strengths not clearly identified.",
-            weaknesses: "Weaknesses not clearly identified.",
-            summary: "Summary not available."
-        };
+    try {
+        const feedback = await callOpenAI(messages);
+        return JSON.parse(feedback);
+    } catch (error) {
+        console.error('Error providing final interview feedback:', error);
+        return { strengths: 'Error', weaknesses: 'Error', summary: 'Error' };
     }
 };
 
-
-
-
-
-
-
-///
-
-
-
-export const genNextCodeQuestion = async (resume_context: string, subject: string, topic: string, interviewExchanges: any[]) => {
+export const generateNextCodingQuestion = async (resume_context: string, subject: string, topic: string, interviewExchanges: any[]) => {
     const messages = [
         { 
             role: 'system', 
@@ -233,26 +205,20 @@ export const genNextCodeQuestion = async (resume_context: string, subject: strin
             - If the candidate struggled: "Ask a simpler question to help them build confidence."
             - Focus on practical applications or understanding of fundamental concepts.
 
-            Return the question in the format:
-            Question: "<question text>"
-            `
+            Return the question in JSON format: {"question": "<question text>", "code" : "<Code>"}.`
         }
     ];
 
-    const response = await callOpenAI(messages);
-    const pattern = /Question:\s*"(.+?)"/;
-    const match = response.match(pattern);
-
-    if (match) {
-        return match[1].trim();
-    } else {
-        return ["Could not generate a valid question.","Code"];
+    try {
+        const response = await callOpenAI(messages);
+        return JSON.parse(response);
+    } catch (error) {
+        console.error('Error generating next coding question:', error);
+        return 'Error generating next question.';
     }
-    
-}
+};
 
-export const getCodeFeedback = async (question: string, code : string,response: string) => {
-
+export const provideCodingFeedback = async (question: string, code: string, response: string) => {
     const feedbackMessages = [
         { 
             role: 'system', 
@@ -263,34 +229,37 @@ export const getCodeFeedback = async (question: string, code : string,response: 
             content: `Provide detailed feedback for the following question and response.
             Question: "${question}"
             Response: "${response}".
-            Focus on strengths and areas for improvement.`
+            Focus on strengths and areas for improvement. Return the result in JSON format: {"feedback": "<feedback>"}.`
         },
     ];
 
-    const feedback = await callOpenAI(feedbackMessages);
+    try {
+        const feedback = await callOpenAI(feedbackMessages);
+        const marksMessages = [
+            { 
+                role: 'system', 
+                content: 'You are an AI assistant assigning marks to interview responses.' 
+            },
+            {
+                role: 'user',
+                content: `Assign marks out of 10 in the format "Marks: X/10" for the response to the question: "${question}". The response was: "${response}". Return the result in JSON format: {"marks": <marks>}.`
+            },
+        ];
 
-    const marksMessages = [
-        { 
-            role: 'system', 
-            content: 'You are an AI assistant assigning marks to interview responses.' 
-        },
-        {
-            role: 'user',
-            content: `Assign marks out of 10 in the format "Marks: X/10" (just the marks) for the response to the question: "${question}". The response was: "${response}".`
-        },
-    ];
+        const marksResponse = await callOpenAI(marksMessages);
+        const marks = JSON.parse(marksResponse).marks;
 
-    const marksResponse = await callOpenAI(marksMessages);
-    const marks = parseInt(marksResponse.match(/\d+/)?.[0] || '0', 10);
+        return { feedback: JSON.parse(feedback).feedback.trim(), marks };
+    } catch (error) {
+        console.error('Error providing coding feedback:', error);
+        return { feedback: 'Error generating feedback.', marks: 0 };
+    }
+};
 
-    return { feedback: feedback.trim(), marks };
-}
-
-
-export const genEvalMatrix = async (resume_context: string, subject: string, topic: string, interviewExchanges: any[]) => {
+export const generateEvaluationMatrix = async (resume_context: string, subject: string, topic: string, interviewExchanges: any[]) => {
     return {
         problem_solving: 0,
         code_quality: 0,
         debugging: 0
-    }
-}
+    };
+};

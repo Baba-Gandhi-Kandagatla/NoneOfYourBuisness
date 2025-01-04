@@ -66,6 +66,20 @@ InterviewToDepartment.belongsTo(Department, { foreignKey: "departmentId" });
 
 Feedback.belongsTo(Interview, { foreignKey: "interviewId" });
 Feedback.belongsTo(Student, { foreignKey: "rollNumber" });
+
+Interview.belongsToMany(Department, {
+    through: InterviewToDepartment,
+    foreignKey: 'interview_id',
+    otherKey: 'department_id',
+    as: 'departments'
+  });
+  
+  Department.belongsToMany(Interview, {
+    through: InterviewToDepartment,
+    foreignKey: 'department_id',
+    otherKey: 'interview_id'
+  });
+  
 };
 
 export default setupAssociations;

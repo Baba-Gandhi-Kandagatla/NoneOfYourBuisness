@@ -1,7 +1,7 @@
 import app from "./app.js";
 import { connectDB } from './db/connection.js';
 import Interview from './models/Interview.js';
-import InterviewInstance from './models/Interview_ins.js';
+import InterviewInstance from './models/InterviewInstances.js';
 import sequelize from './db/connection.js';
 import setupAssociations from "./models/associations.js";
 

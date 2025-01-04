@@ -1,7 +1,7 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../db/connection.js';
 import Admin from './Admin.js';
-import Student from './student.js';
+import Student from './Student.js';
 
 export interface IAuditLog {
   id: bigint;

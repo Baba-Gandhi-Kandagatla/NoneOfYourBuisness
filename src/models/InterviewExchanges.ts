@@ -1,6 +1,6 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../db/connection.js';
-import InterviewInstance from './Interview_ins.js';
+import InterviewInstance from './InterviewInstances.js';
 
 export interface IInterviewExchange {
   id: bigint;

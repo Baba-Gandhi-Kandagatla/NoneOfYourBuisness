@@ -1,7 +1,7 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../db/connection.js';
 import Interview from './Interview.js';
-import Student from './student.js';
+import Student from './Student.js';
 import { json } from 'sequelize';
 
 export interface IFeedBack{

@@ -55,15 +55,16 @@ InterviewExchange.init(
     },
     response: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true,
     },
     marks: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      defaultValue: 0,
     },
     feedback: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true,
     },
   },
   {

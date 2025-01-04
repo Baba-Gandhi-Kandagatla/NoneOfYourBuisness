@@ -16,6 +16,7 @@ app.use(cookieParser(COOKIE_SECRET));
 app.use(morgan("dev"));
 
 app.get('/',(req,res)=>{
+    
     return res.end("Hello This is the backend server for Skill Sage!");
 })
 // app.use("/api/v1",router);

@@ -73,7 +73,7 @@ Student.init(
     attendance: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: 100,
+      defaultValue: 0,
       validate: {
         min: 0,
         max: 100,

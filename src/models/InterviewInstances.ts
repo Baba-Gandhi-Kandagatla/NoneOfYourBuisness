@@ -12,9 +12,11 @@ export interface IInterviewInstance {
   interviewId: bigint;
   studentRollNumber: string;
   studentIp: string;
+  voiolationCount: number;
   marks: number;
   feedback: IFeedBack;
   status: "submitted"|"not submitted";
+  timeTaken: number;
 }
 
 class InterviewInstance extends Model<IInterviewInstance> implements IInterviewInstance {
@@ -22,9 +24,11 @@ class InterviewInstance extends Model<IInterviewInstance> implements IInterviewI
   public interviewId!: bigint;
   public studentRollNumber!: string;
   public studentIp!: string;
+  public voiolationCount!: number;
   public marks!: number;
   public feedback!: IFeedBack;
   public status!: "submitted"|"not submitted";
+  public timeTaken!: number;
 }
 
 InterviewInstance.init(
@@ -58,9 +62,15 @@ InterviewInstance.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    voiolationCount: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
     marks: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      defaultValue: 0,
     },
     feedback: {
       type: DataTypes.JSONB,
@@ -80,6 +90,10 @@ InterviewInstance.init(
       type: DataTypes.ENUM('submitted', 'not submitted'),
       allowNull: false,
       defaultValue: 'not submitted',
+    },
+    timeTaken: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
     },
   },
   {

@@ -40,7 +40,7 @@ Resume.init(
     resumeContext: {
       type: DataTypes.TEXT,
       allowNull: false,
-      defaultValue: ''
+      defaultValue: 'Please upload your resume, To help us understand your profile better',
     },
   },
   {

@@ -51,6 +51,17 @@ Admin.init(
     preferences: {
       type: DataTypes.JSONB,
       allowNull: false,
+      defaultValue: {
+        totalQuestions: 10,
+        noOfCodingQuestions: 5,
+      },
+      validate: {
+        checkTotalQuestions(value: IAdminPreferences) {
+          if (Number(value.noOfCodingQuestions) + Number(value.totalQuestions) > 20) {
+            throw new Error('Total Questions should be less than 20');
+          }
+        }
+      }
     },
   },
   {
@@ -62,9 +73,6 @@ Admin.init(
         if (admin.dataValues.password) {
           admin.dataValues.password = bcrypt.hashSync(admin.dataValues.password,  parseInt(process.env.SALT_ROUNDS) || 10);
         }
-        if(Number(admin.dataValues.preferences.noOfCodingQuestions) + Number(admin.dataValues.preferences.totalQuestions) > 20){
-          throw new Error('Total Questions should be less than 20');
-        }
         if(admin.dataValues.teacherId){
           admin.dataValues.teacherId = admin.dataValues.teacherId.toUpperCase(); 
         }
@@ -75,9 +83,6 @@ Admin.init(
       async beforeUpdate(admin: Admin) {
         if (admin.dataValues.password && admin.changed('password')) {
           admin.dataValues.password = await bcrypt.hashSync(admin.dataValues.password,  parseInt(process.env.SALT_ROUNDS )|| 10);
-        }
-        if(Number(admin.dataValues.preferences.noOfCodingQuestions) + Number(admin.dataValues.preferences.totalQuestions) > 20){
-          throw new Error('Total Questions should be less than 20');
         }
         if(admin.dataValues.teacherId){
           admin.dataValues.teacherId = admin.dataValues.teacherId.toUpperCase(); 

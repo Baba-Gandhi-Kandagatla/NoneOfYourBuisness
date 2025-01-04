@@ -46,18 +46,22 @@ EvalMetrics.init(
     problemSolving: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      defaultValue: 0,
     },
     codeQuality: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      defaultValue: 0,
     },
     debugging: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      defaultValue: 0,
     },
     testing: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      defaultValue: 0,
     },
   },
   {

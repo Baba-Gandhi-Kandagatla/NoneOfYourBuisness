@@ -11,6 +11,7 @@ export interface IInterviewInstance {
   interviewInstanceId: bigint;
   interviewId: bigint;
   studentRollNumber: string;
+  studentIp: string;
   marks: number;
   feedback: IFeedBack;
   status: "submitted"|"not submitted";
@@ -20,6 +21,7 @@ class InterviewInstance extends Model<IInterviewInstance> implements IInterviewI
   public interviewInstanceId!: bigint;
   public interviewId!: bigint;
   public studentRollNumber!: string;
+  public studentIp!: string;
   public marks!: number;
   public feedback!: IFeedBack;
   public status!: "submitted"|"not submitted";
@@ -51,6 +53,10 @@ InterviewInstance.init(
       },
       onUpdate: 'CASCADE',
       onDelete: 'CASCADE',
+    },
+    studentIp: {
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     marks: {
       type: DataTypes.INTEGER,

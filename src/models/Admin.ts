@@ -60,7 +60,7 @@ Admin.init(
     hooks: {
       async beforeCreate(admin: Admin) {
         if (admin.password) {
-          admin.password = await bcrypt.hashSync(admin.password, 10);
+          admin.password = await bcrypt.hashSync(admin.password,  process.env.SALT_ROUNDS || 10);
         }
         if(Number(admin.preferences.noOfCodingQuestions) + Number(admin.preferences.totalQuestions) > 20){
           throw new Error('Total Questions should be less than 20');
@@ -74,7 +74,7 @@ Admin.init(
       },
       async beforeUpdate(admin: Admin) {
         if (admin.password && admin.changed('password')) {
-          admin.password = await bcrypt.hashSync(admin.password, 10);
+          admin.password = await bcrypt.hashSync(admin.password,  process.env.SALT_ROUNDS || 10);
         }
         if(Number(admin.preferences.noOfCodingQuestions) + Number(admin.preferences.totalQuestions) > 20){
           throw new Error('Total Questions should be less than 20');

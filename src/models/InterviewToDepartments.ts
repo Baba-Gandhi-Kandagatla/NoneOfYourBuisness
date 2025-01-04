@@ -4,29 +4,29 @@ import Interview from './Interview.js';
 import Department from './Department.js';
 
 export interface IInterviewToDepartment {
-  id: bigint;
-  interview_id: bigint;
-  department_id: bigint;
+  interviewToDepartmentId: bigint;
+  interviewId: bigint;
+  departmentId: bigint;
 }
 
 class InterviewToDepartment extends Model<IInterviewToDepartment> implements IInterviewToDepartment {
-  public id!: bigint;
-  public interview_id!: bigint;
-  public department_id!: bigint;
+  public interviewToDepartmentId!: bigint;
+  public interviewId!: bigint;
+  public departmentId!: bigint;
 }
 
 InterviewToDepartment.init(
   {
-    id: {
+    interviewToDepartmentId: {
       type: DataTypes.BIGINT,
       autoIncrement: true,
       primaryKey: true,
     },
-    interview_id: {
+    interviewId: {
       type: DataTypes.BIGINT,
       allowNull: false,
     },
-    department_id: {
+    departmentId: {
       type: DataTypes.BIGINT,
       allowNull: false,
     },

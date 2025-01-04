@@ -5,39 +5,39 @@ import InterviewToDepartment from './InterviewToDepartments.js';
 import Department from './Department.js';
 
 export interface IInterview {
-  id: bigint;
-  name: string;
-  collage_id: bigint;
+  interviewId: bigint;
+  interviewName: string;
+  collageId: bigint;
   subject: string;
   topic: string;
-  no_of_questions: number;
-  no_of_coding_questions: number;
+  noOfQuestions: number;
+  noOfCodingQuestions: number;
   status: 'scheduled' | 'paused' | 'active';
 }
 
 class Interview extends Model<IInterview> implements IInterview {
-  public id!: bigint;
-  public name!: string;
-  public collage_id!: bigint;
+  public interviewId!: bigint;
+  public interviewName!: string;
+  public collageId!: bigint;
   public subject!: string;
   public topic!: string;
-  public no_of_questions!: number;
-  public no_of_coding_questions: number;
+  public noOfQuestions!: number;
+  public noOfCodingQuestions: number;
   public status!: 'scheduled' | 'paused' | 'active';
 }
 
 Interview.init(
   {
-    id: {
+    interviewId: {
       type: DataTypes.BIGINT,
       autoIncrement: true,
       primaryKey: true,
     },
-    name: {
+    interviewName: {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    collage_id: {
+    collageId: {
       type: DataTypes.BIGINT,
       allowNull: false,
     },
@@ -49,12 +49,12 @@ Interview.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    no_of_questions: {
+    noOfQuestions: {
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 2
     },
-    no_of_coding_questions: {
+    noOfCodingQuestions: {
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 2

@@ -3,35 +3,35 @@ import sequelize from '../db/connection.js';
 import Student from './Student.js';
 
 export interface IEvalMetrics {
-  id: bigint;
-  problem_solving: number;
-  code_quality: number;
+  evalMetricsId: bigint;
+  problemSolving: number;
+  codeQuality: number;
   debugging: number;
-  roll_number: string;
+  rollNumber: string;
   count: number;
 }
 
 class EvalMetrics extends Model<IEvalMetrics> implements IEvalMetrics {
-  public id!: bigint;
-  public problem_solving!: number;
-  public code_quality!: number;
+  public evalMetricsId!: bigint;
+  public problemSolving!: number;
+  public codeQuality!: number;
   public debugging!: number;
-  public roll_number!: string;
+  public rollNumber!: string;
   public count!: number;
 }
 
 EvalMetrics.init(
   {
-    id: {
+    evalMetricsId: {
       type: DataTypes.BIGINT,
       autoIncrement: true,
       primaryKey: true,
     },
-    problem_solving: {
+    problemSolving: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    code_quality: {
+    codeQuality: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
@@ -39,7 +39,7 @@ EvalMetrics.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    roll_number: {
+    rollNumber: {
       type: DataTypes.STRING,
       allowNull: false,
     },

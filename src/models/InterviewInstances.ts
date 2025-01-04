@@ -1,7 +1,6 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../db/connection.js';
 import Interview from './Interview.js';
-import Student from './Student.js';
 import { json } from 'sequelize';
 
 export interface IFeedBack{
@@ -10,18 +9,18 @@ export interface IFeedBack{
   summary: string,
 }
 export interface IInterviewInstance {
-  id: bigint;
-  interview_ref: bigint;
-  student_roll: string;
+  interviewInstanceId: bigint;
+  interviewId: bigint;
+  studentRollNumber: string;
   marks: number;
   feedback: IFeedBack;
   status: "submitted"|"not submitted";
 }
 
 class InterviewInstance extends Model<IInterviewInstance> implements IInterviewInstance {
-  public id!: bigint;
-  public interview_ref!: bigint;
-  public student_roll!: string;
+  public interviewInstanceId!: bigint;
+  public interviewId!: bigint;
+  public studentRollNumber!: string;
   public marks!: number;
   public feedback!: IFeedBack;
   public status!: "submitted"|"not submitted";
@@ -29,18 +28,18 @@ class InterviewInstance extends Model<IInterviewInstance> implements IInterviewI
 
 InterviewInstance.init(
   {
-    id: {
+    interviewInstanceId: {
       type: DataTypes.BIGINT,
       autoIncrement: true,
       primaryKey: true,
     },
-    interview_ref: {
+    interviewId: {
       type: DataTypes.BIGINT,
       allowNull: false,
       onUpdate: 'CASCADE',
       onDelete: 'CASCADE',
     },
-    student_roll: {
+    studentRollNumber: {
       type: DataTypes.STRING,
       allowNull: false,
     },

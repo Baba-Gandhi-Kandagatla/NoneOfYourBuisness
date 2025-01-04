@@ -3,8 +3,8 @@ import sequelize from '../db/connection.js';
 import InterviewInstance from './InterviewInstances.js';
 
 export interface IInterviewExchange {
-  id: bigint;
-  interview_ins_ref: bigint;
+  InterviewExchangeId: bigint;
+  interviewInstanceId: bigint;
   question: string;
   code: string;
   response: string;
@@ -13,8 +13,8 @@ export interface IInterviewExchange {
 }
 
 class InterviewExchange extends Model<IInterviewExchange> implements IInterviewExchange {
-  public id!: bigint;
-  public interview_ins_ref!: bigint;
+  public InterviewExchangeId!: bigint;
+  public interviewInstanceId!: bigint;
   public question!: string;
   public code!: string;
   public response!: string;
@@ -24,12 +24,12 @@ class InterviewExchange extends Model<IInterviewExchange> implements IInterviewE
 
 InterviewExchange.init(
   {
-    id: {
+    InterviewExchangeId: {
       type: DataTypes.BIGINT,
       autoIncrement: true,
       primaryKey: true,
     },
-    interview_ins_ref: {
+    interviewInstanceId: {
       type: DataTypes.BIGINT,
       allowNull: false,
       references: {

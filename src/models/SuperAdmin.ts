@@ -1,21 +1,22 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../db/connection.js';
 
-export interface IGod {
-  id: bigint;
+export interface ISuperAdmin {
+  godId: bigint;
   username: string;
   password: string;
 }
 
-class God extends Model<IGod> implements IGod {
-  public id!: bigint;
+class SuperAdmin extends Model<ISuperAdmin> implements ISuperAdmin {
+  public godId!: bigint;
   public username!: string;
   public password!: string;
 }
 
-God.init(
+SuperAdmin.init(
   {
-    id: {
+    
+    godId: {
       type: DataTypes.BIGINT,
       autoIncrement: true,
       primaryKey: true,
@@ -36,4 +37,4 @@ God.init(
   }
 );
 
-export default God;
+export default SuperAdmin;

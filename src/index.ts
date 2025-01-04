@@ -1,13 +1,14 @@
 import app from "./app.js";
 import { connectDB } from './db/connection.js';
 import sequelize from './db/connection.js';
-
+import setupAssociations from "./models/Associations.js";
 
 const PORT = process.env.PORT || 5000;
 try {
   await connectDB().then(() => console.log("Connected to the database successfully."));
 
   console.log("Syncing models...");
+  setupAssociations();
   await sequelize.sync({ alter: true })
       .then(() => console.log('Database synced'))
       .catch((err) => console.error('Error syncing database:', err));

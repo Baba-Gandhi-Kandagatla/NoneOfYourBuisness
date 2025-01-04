@@ -16,7 +16,7 @@ export const validate = (validations:ValidationChain[])=>{
         if(errors.isEmpty()){
             return next();
         }
-        return res.status(422).json({errors: errors.array()});
+        return res.status(422).json({error: errors.array()});
     };
 };
 

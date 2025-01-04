@@ -3,24 +3,22 @@ import jwt from "jsonwebtoken";
 
 const COOKIE_NAME = process.env.COOKIE_NAME;
 export const createToken = (rollnumber: string, role: string, expiresIn: string) => {
-  const payload = { rollnumber,role};
+  const payload = { rollnumber, role };
   const token = jwt.sign(payload, process.env.JWT_SECRET, {
     expiresIn,
   });
   return token;
 };
 
-
 export const verifyToken = async (
-  
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-    const token = req.signedCookies[process.env.COOKIE_NAME];
-  
+  const token = req.signedCookies[process.env.COOKIE_NAME];
+
   if (!token || token.trim() === "") {
-    return res.status(401).json({ message: "Token Not Received" });
+    return res.status(401).json({ error: "Token Not Received" });
   }
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
@@ -32,15 +30,14 @@ export const verifyToken = async (
     console.error("JWT verification error:", error);
 
     if (error instanceof jwt.TokenExpiredError) {
-      return res.status(401).json({ message: "Token Expired" });
+      return res.status(401).json({ error: "Token Expired" });
     } else if (error instanceof jwt.JsonWebTokenError) {
-      return res.status(401).json({ message: "Invalid Token" });
+      return res.status(401).json({ error: "Invalid Token" });
     } else {
-      return res.status(500).json({ message: "Internal Server Error" });
+      return res.status(500).json({ error: "Internal Server Error" });
     }
   }
 };
-
 
 export const verifyTokenStudent = async (
   req: Request,
@@ -50,26 +47,26 @@ export const verifyTokenStudent = async (
   const token = req.signedCookies[process.env.COOKIE_NAME];
 
   if (!token || token.trim() === "") {
-    return res.status(401).json({ message: "Token Not Received" });
+    return res.status(401).json({ error: "Token Not Received" });
   }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
     res.locals.jwtData = decoded;
 
-    if (res.locals.jwtData.role!== 'student') {
-      return res.status(403).json({ message: "Access denied. Not a student." });
+    if (res.locals.jwtData.role !== 'student') {
+      return res.status(403).json({ error: "Access denied. Not a student." });
     }
     next();
   } catch (error) {
     console.error("JWT verification error:", error);
 
     if (error instanceof jwt.TokenExpiredError) {
-      return res.status(401).json({ message: "Token Expired" });
+      return res.status(401).json({ error: "Token Expired" });
     } else if (error instanceof jwt.JsonWebTokenError) {
-      return res.status(401).json({ message: "Invalid Token" });
+      return res.status(401).json({ error: "Invalid Token" });
     } else {
-      return res.status(500).json({ message: "Internal Server Error" });
+      return res.status(500).json({ error: "Internal Server Error" });
     }
   }
 };
@@ -82,7 +79,7 @@ export const verifyTokenAdmin = async (
   const token = req.signedCookies[process.env.COOKIE_NAME];
 
   if (!token || token.trim() === "") {
-    return res.status(401).json({ message: "Token Not Received" });
+    return res.status(401).json({ error: "Token Not Received" });
   }
 
   try {
@@ -91,7 +88,7 @@ export const verifyTokenAdmin = async (
     res.locals.jwtData = decoded;
 
     if (res.locals.jwtData.role !== 'admin') {
-      return res.status(403).json({ message: "Access denied. Not an Admin." });
+      return res.status(403).json({ error: "Access denied. Not an Admin." });
     }
 
     next();
@@ -99,11 +96,11 @@ export const verifyTokenAdmin = async (
     console.error("JWT verification error:", error);
 
     if (error instanceof jwt.TokenExpiredError) {
-      return res.status(401).json({ message: "Token Expired" });
+      return res.status(401).json({ error: "Token Expired" });
     } else if (error instanceof jwt.JsonWebTokenError) {
-      return res.status(401).json({ message: "Invalid Token" });
+      return res.status(401).json({ error: "Invalid Token" });
     } else {
-      return res.status(500).json({ message: "Internal Server Error" });
+      return res.status(500).json({ error: "Internal Server Error" });
     }
   }
 };

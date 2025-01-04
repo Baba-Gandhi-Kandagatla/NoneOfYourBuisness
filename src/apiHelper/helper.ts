@@ -11,7 +11,6 @@ new OpenAI({
 // new OpenAI({ apiKey: process.env.OPEN_AI_SECRET });
 
 const callOpenAI = async (messages: any[]) => {
-    console.log("hiiiii")
     try {
         const response = await openai.chat.completions.create({
             // model: 'gpt-4o-mini',
@@ -77,7 +76,7 @@ export const provideInterviewFeedback = async (question: string, response: strin
             },
             {
                 role: 'user',
-                content: `Assign marks out of 10 in the format "Marks: X/10" for the response to the question: "${question}". The response was: "${response}". Return the result in JSON format: {"marks": <marks>}.`
+                content: `Assign marks out of 10 for the response to the question: "${question}". The response was: "${response}". Return the result in JSON format: {"marks": <marks>}.`
             },
         ];
 

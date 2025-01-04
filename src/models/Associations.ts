@@ -13,6 +13,8 @@ import Department from "./Department.js";
 import EvalMetrics from "./EvalMetrics.js";
 import Batch from "./Batch.js";
 
+
+const setupAssociations = () => {
 Admin.belongsTo(College, { foreignKey: "collegeId" });
 Admin.hasMany(AdminAuditLog, { foreignKey: "adminId" });
 AdminAuditLog.belongsTo(Admin, { foreignKey: "adminId" });
@@ -64,3 +66,6 @@ InterviewToDepartment.belongsTo(Department, { foreignKey: "departmentId" });
 
 Feedback.belongsTo(Interview, { foreignKey: "interviewId" });
 Feedback.belongsTo(Student, { foreignKey: "rollNumber" });
+};
+
+export default setupAssociations;

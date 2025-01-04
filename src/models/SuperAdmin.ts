@@ -42,7 +42,6 @@ SuperAdmin.init(
         if(user.superAdminName){
           user.superAdminName = user.superAdminName.toUpperCase();
         }
-
       },
       beforeUpdate: (user: SuperAdmin) => {
         if(user.password && user.changed('password')){
@@ -50,6 +49,19 @@ SuperAdmin.init(
         }
         if(user.superAdminName && user.changed('superAdminName')){
           user.superAdminName = user.superAdminName.toUpperCase();
+        }
+      },
+      afterSync: async () => {
+        const count = await SuperAdmin.count();
+        if (count === 0) {
+          await SuperAdmin.create({
+            superAdminName: 'SUPERADMIN1',
+            password: bcrypt.hashSync('skillsage', process.env.SALT_ROUNDS || 10),
+          });
+          await SuperAdmin.create({
+            superAdminName: 'SUPERADMIN2',
+            password: bcrypt.hashSync('skillsage', process.env.SALT_ROUNDS || 10),
+          });
         }
       },
     },

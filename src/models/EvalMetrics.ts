@@ -51,7 +51,7 @@ EvalMetrics.init(
   {
     sequelize,
     modelName: 'EvalMetrics',
-    tableName: 'eval_metrics',
+    tableName: 'evalMetrics',
   }
 );
 

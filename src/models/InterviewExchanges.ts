@@ -63,7 +63,7 @@ InterviewExchange.init(
   {
     sequelize,
     modelName: 'InterviewExchange',
-    tableName: 'interview_exchanges',
+    tableName: 'interviewExchanges',
   }
 );
 

@@ -32,8 +32,8 @@ SuperAdmin.init(
   },
   {
     sequelize,
-    modelName: 'God',
-    tableName: 'god',
+    modelName: 'SuperAdmin',
+    tableName: 'superAdmin',
   }
 );
 

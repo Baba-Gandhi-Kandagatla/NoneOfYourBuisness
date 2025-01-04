@@ -4,31 +4,31 @@ import Admin from './Admin.js';
 import Student from './Student.js';
 
 export interface IAuditLog {
-  id: bigint;
-  roll_number: string;
+  logId: bigint;
+  rollNumber: string;
   ipaddress: string;
   event: string;
-  useragent: string;
+  userType: string;
   time: Date;
 }
 
 class AuditLog extends Model<IAuditLog> implements IAuditLog {
-  public id!: bigint;
-  public roll_number!: string;
+  public logId!: bigint;
+  public rollNumber!: string;
   public ipaddress!: string;
   public event!: string;
-  public useragent!: string;
+  public userType!: string;
   public time!: Date;
 }
 
 AuditLog.init(
   {
-    id: {
+    logId: {
       type: DataTypes.BIGINT,
       autoIncrement: true,
       primaryKey: true,
     },
-    roll_number: {
+    rollNumber: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -40,7 +40,7 @@ AuditLog.init(
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    useragent: {
+    userType: {
       type: DataTypes.TEXT,
       allowNull: false,
     },
@@ -52,7 +52,7 @@ AuditLog.init(
   {
     sequelize,
     modelName: 'AuditLog',
-    tableName: 'audit_logs',
+    tableName: 'auditLogs',
   }
 );
 

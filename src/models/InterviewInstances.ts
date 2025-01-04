@@ -60,7 +60,7 @@ InterviewInstance.init(
   {
     sequelize,
     modelName: 'InterviewInstance',
-    tableName: 'interview_instances',
+    tableName: 'interviewInstances',
   }
 );
 

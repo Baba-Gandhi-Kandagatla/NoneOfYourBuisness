@@ -65,6 +65,12 @@ Admin.init(
         if(Number(admin.preferences.noOfCodingQuestions) + Number(admin.preferences.totalQuestions) > 20){
           throw new Error('Total Questions should be less than 20');
         }
+        if(admin.teacherId){
+          admin.teacherId = admin.teacherId.toUpperCase(); 
+        }
+        if(admin.adminName){
+          admin.adminName = admin.adminName.toUpperCase();
+        }
       },
       async beforeUpdate(admin: Admin) {
         if (admin.password && admin.changed('password')) {
@@ -72,6 +78,12 @@ Admin.init(
         }
         if(Number(admin.preferences.noOfCodingQuestions) + Number(admin.preferences.totalQuestions) > 20){
           throw new Error('Total Questions should be less than 20');
+        }
+        if(admin.teacherId){
+          admin.teacherId = admin.teacherId.toUpperCase(); 
+        }
+        if(admin.adminName){
+          admin.adminName = admin.adminName.toUpperCase();
         }
       },
     },

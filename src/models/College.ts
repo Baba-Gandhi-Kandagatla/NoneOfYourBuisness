@@ -33,6 +33,19 @@ College.init(
     sequelize,
     modelName: 'College',
     tableName: 'college',
+    hooks: {
+      beforeCreate: async (college:College) => {
+        if(college.collegeName){
+          college.collegeName = college.collegeName.toUpperCase();
+        }
+      },
+      beforeUpdate: async (college:College) => {
+        if(college.collegeName && college.changed('collegeName')){
+          college.collegeName = college.collegeName.toUpperCase();
+        }
+      },
+    },
+
   }
 );
 

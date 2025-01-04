@@ -38,6 +38,18 @@ Department.init(
     sequelize,
     modelName: 'Department',
     tableName: 'department',
+    hooks: {
+      beforeCreate: async (department:Department) => {
+        if(department.departmentName){
+          department.departmentName = department.departmentName.toUpperCase();
+        }
+      },
+      beforeUpdate: async (department:Department) => {
+        if(department.departmentName && department.changed('departmentName')){
+          department.departmentName = department.departmentName.toUpperCase();
+        }
+      },
+    }
   }
 );
 

@@ -3,13 +3,13 @@ import sequelize from '../db/connection.js';
 import bcrypt from 'bcrypt';
 export interface ISuperAdmin {
   superAdminId: bigint;
-  username: string;
+  superAdminName: string;
   password: string;
 }
 
 class SuperAdmin extends Model<ISuperAdmin> implements ISuperAdmin {
   public superAdminId!: bigint;
-  public username!: string;
+  public superAdminName!: string;
   public password!: string;
 }
 
@@ -21,7 +21,7 @@ SuperAdmin.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    username: {
+    superAdminName: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -39,10 +39,17 @@ SuperAdmin.init(
         if(user.password){
           user.password = bcrypt.hashSync(user.password, process.env.SALT_ROUNDS || 10);
         }
+        if(user.superAdminName){
+          user.superAdminName = user.superAdminName.toUpperCase();
+        }
+
       },
       beforeUpdate: (user: SuperAdmin) => {
         if(user.password && user.changed('password')){
           user.password = bcrypt.hashSync(user.password, process.env.SALT_ROUNDS || 10);
+        }
+        if(user.superAdminName && user.changed('superAdminName')){
+          user.superAdminName = user.superAdminName.toUpperCase();
         }
       },
     },

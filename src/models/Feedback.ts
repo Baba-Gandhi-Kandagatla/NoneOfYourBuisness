@@ -1,5 +1,7 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../db/connection.js';
+import Student from './student.js';
+import Interview from './Interview.js';
 
 export interface IFeedback {
   feedbackId: bigint;
@@ -25,10 +27,22 @@ Feedback.init(
     rollNumber: {
       type: DataTypes.STRING(255),
       allowNull: false,
+      references: {
+        model: Student,
+        key: 'rollNumber',
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
     },
     interviewId: {
       type: DataTypes.BIGINT,
       allowNull: false,
+      references: {
+        model: Interview,
+        key: 'interviewId',
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
     },
     feedbackText: {
       type: DataTypes.TEXT,

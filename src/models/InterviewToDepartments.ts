@@ -1,5 +1,8 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../db/connection.js';
+import Interview from './Interview.js';
+import Department from './Department.js';
+
 
 export interface IInterviewToDepartment {
   interviewToDepartmentId: bigint;
@@ -23,10 +26,22 @@ InterviewToDepartment.init(
     interviewId: {
       type: DataTypes.BIGINT,
       allowNull: false,
+      references: {
+        model: Interview,
+        key: 'interviewId',
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
     },
     departmentId: {
       type: DataTypes.BIGINT,
       allowNull: false,
+      references: {
+        model: Department,
+        key: 'departmentId',
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
     },
   },
   {
@@ -35,6 +50,5 @@ InterviewToDepartment.init(
     tableName: 'interviewToDepartments',
   }
 );
-
 
 export default InterviewToDepartment;

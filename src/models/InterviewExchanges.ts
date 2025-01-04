@@ -36,7 +36,7 @@ InterviewExchange.init(
       allowNull: false,
       references: {
         model: InterviewInstance,
-        key: 'id',
+        key: 'interviewInstanceId',
       },
       onUpdate: 'CASCADE',
       onDelete: 'CASCADE',

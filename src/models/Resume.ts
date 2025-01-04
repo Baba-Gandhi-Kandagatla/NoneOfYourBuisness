@@ -26,6 +26,12 @@ Resume.init(
     rollNumber: {
       type: DataTypes.STRING,
       allowNull: false,
+      references: {
+        model: Student,
+        key: 'rollNumber',
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
     },
     resumeLocation: {
       type: DataTypes.STRING,

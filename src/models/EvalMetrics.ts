@@ -1,5 +1,6 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../db/connection.js';
+import Student from './student.js';
 
 export interface IEvalMetrics {
   evalMetricsId: bigint;
@@ -31,6 +32,12 @@ EvalMetrics.init(
     rollNumber: {
       type: DataTypes.STRING,
       allowNull: false,
+      references: {
+        model: Student,
+        key: 'rollNumber',
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
     },
     count: {
       type: DataTypes.INTEGER,

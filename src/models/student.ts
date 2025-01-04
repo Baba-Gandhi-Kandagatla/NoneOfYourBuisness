@@ -1,11 +1,9 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../db/connection.js';
 import bcrypt from 'bcrypt';
-import Resume from './Resume.js';
-import InterviewExchange from './InterviewExchanges.js';
-import Interview from './Interview.js';
-import InterviewToDepartment from './InterviewToDepartments.js';
-import InterviewInstance from './InterviewInstances.js';
+import Batch from './Batch.js';
+import Department from './Department.js';
+import College from './College.js';
 
 export interface IStudent {
   rollNumber: string;
@@ -41,10 +39,22 @@ Student.init(
     batchId: {
       type: DataTypes.BIGINT,
       allowNull: false,
+      references: {
+        model: Batch,
+        key: 'batchId',
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
     },
     departmentId: {
       type: DataTypes.BIGINT,
       allowNull: false,
+      references: {
+        model: Department,
+        key: 'departmentId',
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
     },
     password: {
       type: DataTypes.STRING,
@@ -53,6 +63,12 @@ Student.init(
     collegeId: {
       type: DataTypes.BIGINT,
       allowNull: false,
+      references: {
+        model: College,
+        key: 'collegeId',
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
     },
     attendance: {
       type: DataTypes.INTEGER,

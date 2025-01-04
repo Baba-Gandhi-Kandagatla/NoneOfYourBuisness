@@ -2,43 +2,45 @@ import { Model, DataTypes } from 'sequelize';
 import sequelize from '../db/connection.js';
 import College from './College.js';
 
-export interface IDepartment {
-  departmentId: bigint;
-  departmentName: string;
+export interface IBatch {
+  batchId: bigint;
+  batchName: string;
   collegeId: bigint;
 }
 
-class Department extends Model<IDepartment> implements IDepartment {
-  public departmentId!: bigint;
-  public departmentName!: string;
+class Batch extends Model<IBatch> implements IBatch {
+  public batchId!: bigint;
+  public batchName!: string;
   public collegeId!: bigint;
 }
 
-Department.init(
+Batch.init(
   {
-    departmentId: {
+    batchId: {
       type: DataTypes.BIGINT,
       autoIncrement: true,
       primaryKey: true,
     },
-    departmentName: {
+    batchName: {
       type: DataTypes.STRING,
       allowNull: false,
     },
     collegeId: {
       type: DataTypes.BIGINT,
       allowNull: false,
-      references: {
-        model: College,
-        key: 'collegeId',
-      },
+        references: {
+            model: College,
+            key: 'collegeId',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
     }
   },
   {
     sequelize,
-    modelName: 'Department',
-    tableName: 'department',
+    modelName: 'Batch',
+    tableName: 'batch',
   }
 );
 
-export default Department;
+export default Batch;

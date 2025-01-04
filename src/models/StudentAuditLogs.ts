@@ -1,6 +1,5 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../db/connection.js';
-import Admin from './Admin.js';
 import Student from './student.js';
 
 export interface IStudentAuditLog {
@@ -27,6 +26,12 @@ StudentAuditLog.init(
     rollNumber: {
       type: DataTypes.STRING,
       allowNull: false,
+      references: {
+        model: Student,
+        key: 'rollNumber',
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
     },
     ipaddress: {
       type: DataTypes.STRING,
@@ -43,9 +48,5 @@ StudentAuditLog.init(
     tableName: 'studentAuditLogs',
   }
 );
-
-
-StudentAuditLog.belongsTo(Student, { foreignKey: 'roll_number' });
-StudentAuditLog.belongsTo(Admin, { foreignKey: 'roll_number' });
 
 export default StudentAuditLog;

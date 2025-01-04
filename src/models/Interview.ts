@@ -2,6 +2,8 @@ import { Model, DataTypes } from 'sequelize';
 import sequelize from '../db/connection.js';
 import InterviewToDepartment from './InterviewToDepartments.js';
 import Department from './Department.js';
+import College from './College.js';
+import Batch from './Batch.js';
 
 export interface IInterview {
   interviewId: bigint;
@@ -45,10 +47,22 @@ Interview.init(
     collageId: {
       type: DataTypes.BIGINT,
       allowNull: false,
+      references: {
+        model: College,
+        key: 'collegeId',
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
     },
     batchId: {
       type: DataTypes.BIGINT,
       allowNull: false,
+      references: {
+        model: Batch,
+        key: 'batchId',
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
     },
     subject: {
       type: DataTypes.STRING,

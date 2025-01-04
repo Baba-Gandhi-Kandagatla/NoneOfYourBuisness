@@ -1,7 +1,6 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../db/connection.js';
 import Admin from './Admin.js';
-import Student from './student.js';
 
 export interface IAdminAuditLog {
   logId: bigint;
@@ -27,6 +26,12 @@ AdminAuditLog.init(
     teacherId: {
       type: DataTypes.STRING,
       allowNull: false,
+      references: {
+        model: Admin,
+        key: 'teacherId',
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
     },
     ipaddress: {
       type: DataTypes.STRING,
@@ -43,9 +48,4 @@ AdminAuditLog.init(
     tableName: 'studentAuditLogs',
   }
 );
-
-
-
-AdminAuditLog.belongsTo(Admin, { foreignKey: 'teacherId' });
-
 export default AdminAuditLog;

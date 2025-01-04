@@ -1,5 +1,7 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../db/connection.js';
+import Student from './student.js';
+import Interview from './Interview.js';
 export interface IFeedBack{
   strengths: string[],
   weaknesses: string[],
@@ -33,12 +35,22 @@ InterviewInstance.init(
     interviewId: {
       type: DataTypes.BIGINT,
       allowNull: false,
+      references: {
+        model: Interview,
+        key: 'interviewId',
+      },
       onUpdate: 'CASCADE',
       onDelete: 'CASCADE',
     },
     studentRollNumber: {
       type: DataTypes.STRING,
       allowNull: false,
+      references: {
+        model: Student,
+        key: 'rollNumber',
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
     },
     marks: {
       type: DataTypes.INTEGER,

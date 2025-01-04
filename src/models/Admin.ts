@@ -2,7 +2,6 @@ import { Model, DataTypes } from 'sequelize';
 import sequelize from '../db/connection.js';
 import College from './College.js';
 import bcrypt from 'bcrypt';
-import AdminAuditLog from './AdminAuditLogs.js';
 
 export interface IAdmin {
     teacherId: string;
@@ -42,6 +41,12 @@ Admin.init(
     collegeId: {
         type: DataTypes.BIGINT,
         allowNull: false,
+        references: {
+          model: College,
+          key: 'collegeId',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
       },
     preferences: {
       type: DataTypes.JSONB,

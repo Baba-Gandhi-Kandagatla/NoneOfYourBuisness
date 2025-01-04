@@ -2,6 +2,7 @@ import { Model, DataTypes } from 'sequelize';
 import sequelize from '../db/connection.js';
 import College from './College.js';
 import bcrypt from 'bcrypt';
+import AdminAuditLog from './AdminAuditLogs.js';
 
 export interface IAdmin {
     teacherId: string;

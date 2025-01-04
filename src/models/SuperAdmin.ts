@@ -32,20 +32,8 @@ SuperAdmin.init(
   },
   {
     sequelize,
-    modelName: 'God',
-    tableName: 'god',
-    hooks: {
-      beforeCreate: (user: SuperAdmin) => {
-        if(user.password){
-          user.password = bcrypt.hashSync(user.password, process.env.SALT_ROUNDS || 10);
-        }
-      },
-      beforeUpdate: (user: SuperAdmin) => {
-        if(user.password && user.changed('password')){
-          user.password = bcrypt.hashSync(user.password, process.env.SALT_ROUNDS || 10);
-        }
-      },
-    },
+    modelName: 'SuperAdmin',
+    tableName: 'superAdmin',
   }
 );
 

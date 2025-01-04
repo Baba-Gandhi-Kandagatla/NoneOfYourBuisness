@@ -1,6 +1,11 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../db/connection.js';
 import bcrypt from 'bcrypt';
+import Resume from './Resume.js';
+import InterviewExchange from './InterviewExchanges.js';
+import Interview from './Interview.js';
+import InterviewToDepartment from './InterviewToDepartments.js';
+import InterviewInstance from './InterviewInstances.js';
 
 export interface IStudent {
   rollNumber: string;

@@ -4,53 +4,48 @@ import College from './College.js';
 import bcrypt from 'bcrypt';
 
 export interface IAdmin {
-    roll_number: string;
-    username: string;
+    teacherId: string;
+    name: string;
     password: string;
-    college_id: bigint;
+    collegeId: bigint;
     preferences: IAdminPreferences;
 }
 
 export interface IAdminPreferences {
-  total_questions:Number;
-  no_of_coding_questions:Number;
-  default_password: string;
+  totalQuestions:Number;
+  noOfCodingQuestions:Number;
+  defaultPassword: string;
 }
 
 class Admin extends Model<IAdmin> implements IAdmin {
-  public roll_number!: string;
-  public username!: string;
+  public teacherId!: string;
+  public name!: string;
   public password!: string;
-  public college_id!: bigint;
+  public collegeId!: bigint;
   public preferences!: IAdminPreferences;
 }
 
 Admin.init(
   {
-    roll_number: {
-      type: DataTypes.STRING,
+    teacherId: {
       primaryKey: true,
-    },
-    username: {
       type: DataTypes.STRING,
-      allowNull: false,
     },
     password: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    college_id: {
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    collegeId: {
         type: DataTypes.BIGINT,
         allowNull: false,
       },
     preferences: {
       type: DataTypes.JSONB,
       allowNull: false,
-      defaultValue: {
-        total_questions: 10,
-        no_of_coding_questions: 5,
-        default_password: 'Kmit@123',
-      }
     },
   },
   {
@@ -62,10 +57,16 @@ Admin.init(
         if (admin.password) {
           admin.password = await bcrypt.hash(admin.password, 10);
         }
+        if(Number(admin.preferences.noOfCodingQuestions) + Number(admin.preferences.totalQuestions) > 20){
+          throw new Error('Total Questions should be less than 20');
+        }
       },
       async beforeUpdate(admin: Admin) {
         if (admin.password && admin.changed('password')) {
           admin.password = await bcrypt.hash(admin.password, 10);
+        }
+        if(Number(admin.preferences.noOfCodingQuestions) + Number(admin.preferences.totalQuestions) > 20){
+          throw new Error('Total Questions should be less than 20');
         }
       },
     },

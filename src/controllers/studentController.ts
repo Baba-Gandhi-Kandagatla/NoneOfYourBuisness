@@ -16,6 +16,7 @@ import InterviewInstance from "../models/InterviewInstances.js";
 import InterviewExchange from "../models/InterviewExchanges.js";
 import Feedback from "../models/Feedback.js";
 import { generateResumeSummary } from "../apiHelper/helper.js";
+import { clearAndSetCookie, createToken } from "../utils/token-manager.js";
 
 
 async function getStudentByRollNumber(rollNumber: string) 
@@ -239,5 +240,34 @@ export const getFeedback = async (req: Request, res: Response) => {
   }
 };
 
+export const studentLogin = async (req: Request, res: Response) => {
+  const { rollNumber, password } = req.body;
+  try {
+    const student = await Student.findOne({ where: { rollNumber: rollNumber } });
+    if (!student) {
+      return res.status(404).json({ message: "User not found." });
+    }
+    const isPasswordValid = await compare(password, student.get().password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: "Invalid password." });
+    }
+    const token = createToken(
+      student.get().rollNumber,
+      'student',
+      '1h'
+    );
 
+    clearAndSetCookie(res, token);
+
+    const userInfo = {
+      rollNumber: student.get().rollNumber,
+      username: student.get().studentname,
+      role: 'student'
+    };
+
+    res.status(200).json({ ...userInfo, message: 'Login successful' });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
 

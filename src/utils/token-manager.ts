@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+const NODE_ENV = process.env.NODE_ENV;
 
 const COOKIE_NAME = process.env.COOKIE_NAME;
 export const createToken = (rollnumber: string, role: string, expiresIn: string) => {
@@ -103,4 +104,24 @@ export const verifyTokenAdmin = async (
       return res.status(500).json({ error: "Internal Server Error" });
     }
   }
+};
+
+
+export const clearAndSetCookie = (res: Response, token: string) => {
+  res.clearCookie(COOKIE_NAME, {
+    httpOnly: true,
+    domain: "localhost",
+    signed: true,
+    path: "/",
+  });
+
+  const cookieOptions = {
+    httpOnly: true,
+    signed: true,
+    secure: NODE_ENV === 'production',
+    maxAge: 3600000,
+    path: "/"
+  };
+
+  res.cookie(COOKIE_NAME, token, cookieOptions);
 };

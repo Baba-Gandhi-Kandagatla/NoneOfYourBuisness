@@ -2,6 +2,7 @@ import app from "./app.js";
 import { connectDB } from './db/connection.js';
 import sequelize from './db/connection.js';
 import setupAssociations from "./models/Associations.js";
+import SuperAdmin from "./models/SuperAdmin.js";
 
 const PORT = process.env.PORT || 5000;
 try {
@@ -9,6 +10,7 @@ try {
 
   console.log("Syncing models...");
   setupAssociations();
+  await SuperAdmin.sync({ alter: true });
   await sequelize.sync({ alter: true })
       .then(() => console.log('Database synced'))
       .catch((err) => console.error('Error syncing database:', err));

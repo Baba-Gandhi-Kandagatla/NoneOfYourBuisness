@@ -35,7 +35,7 @@ SuperAdmin.init(
     modelName: 'SuperAdmin',
     tableName: 'superAdmin',
     hooks: {
-      beforeCreate: (user: SuperAdmin) => {
+      beforeCreate: async (user: SuperAdmin) => {
         if(user.password){
           user.password = bcrypt.hashSync(user.password, process.env.SALT_ROUNDS || 10);
         }
@@ -43,7 +43,7 @@ SuperAdmin.init(
           user.superAdminName = user.superAdminName.toUpperCase();
         }
       },
-      beforeUpdate: (user: SuperAdmin) => {
+      beforeUpdate:async (user: SuperAdmin) => {
         if(user.password && user.changed('password')){
           user.password = bcrypt.hashSync(user.password, process.env.SALT_ROUNDS || 10);
         }
@@ -53,14 +53,10 @@ SuperAdmin.init(
       },
       afterSync: async () => {
         const count = await SuperAdmin.count();
-        if (count === 0) {
+        if (count === 0 && process.env.SUPERADMIN_NAME && process.env.SUPERADMIN_PASSWORD) {
           await SuperAdmin.create({
-            superAdminName: 'SUPERADMIN1',
-            password: bcrypt.hashSync('skillsage', process.env.SALT_ROUNDS || 10),
-          });
-          await SuperAdmin.create({
-            superAdminName: 'SUPERADMIN2',
-            password: bcrypt.hashSync('skillsage', process.env.SALT_ROUNDS || 10),
+            superAdminName: process.env.SUPERADMIN_NAME ,
+            password: process.env.SUPERADMIN_PASSWORD ,
           });
         }
       },

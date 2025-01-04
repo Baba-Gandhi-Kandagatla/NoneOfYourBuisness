@@ -4,7 +4,7 @@ import College from './College.js';
 import bcrypt from 'bcrypt';
 
 export interface IAdmin {
-    teacherId: string;
+    adminId: string;
     adminName: string;
     password: string;
     collegeId: bigint;
@@ -17,7 +17,7 @@ export interface IAdminPreferences {
 }
 
 class Admin extends Model<IAdmin> implements IAdmin {
-  public teacherId!: string;
+  public adminId!: string;
   public adminName!: string;
   public password!: string;
   public collegeId!: bigint;
@@ -26,7 +26,7 @@ class Admin extends Model<IAdmin> implements IAdmin {
 
 Admin.init(
   {
-    teacherId: {
+    adminId: {
       primaryKey: true,
       type: DataTypes.STRING,
     },
@@ -73,8 +73,8 @@ Admin.init(
         if (admin.dataValues.password) {
           admin.dataValues.password = bcrypt.hashSync(admin.dataValues.password,  parseInt(process.env.SALT_ROUNDS) || 10);
         }
-        if(admin.dataValues.teacherId){
-          admin.dataValues.teacherId = admin.dataValues.teacherId.toUpperCase(); 
+        if(admin.dataValues.adminId){
+          admin.dataValues.adminId = admin.dataValues.adminId.toUpperCase(); 
         }
         if(admin.dataValues.adminName){
           admin.dataValues.adminName = admin.dataValues.adminName.toUpperCase();
@@ -84,8 +84,8 @@ Admin.init(
         if (admin.dataValues.password && admin.changed('password')) {
           admin.dataValues.password = await bcrypt.hashSync(admin.dataValues.password,  parseInt(process.env.SALT_ROUNDS )|| 10);
         }
-        if(admin.dataValues.teacherId){
-          admin.dataValues.teacherId = admin.dataValues.teacherId.toUpperCase(); 
+        if(admin.dataValues.adminId){
+          admin.dataValues.adminId = admin.dataValues.adminId.toUpperCase(); 
         }
         if(admin.dataValues.adminName){
           admin.dataValues.adminName = admin.dataValues.adminName.toUpperCase();

@@ -28,7 +28,7 @@ AdminAuditLog.init(
       allowNull: false,
       references: {
         model: Admin,
-        key: 'teacherId',
+        key: 'adminId',
       },
       onUpdate: 'CASCADE',
       onDelete: 'CASCADE',

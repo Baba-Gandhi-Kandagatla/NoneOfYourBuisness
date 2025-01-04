@@ -3,6 +3,8 @@ import jwt from "jsonwebtoken";
 
 const COOKIE_NAME = process.env.COOKIE_NAME;
 const JWT_SECRET = process.env.JWT_SECRET as string;
+const NODE_ENV = process.env.NODE_ENV;
+
 
 const handleJWTError = (error: any, res: Response) => {
   if (error instanceof jwt.TokenExpiredError) {
@@ -34,6 +36,25 @@ const verifyJWT = (req: Request, res: Response, next: NextFunction, requiredRole
     console.error("JWT verification error:", error);
     return handleJWTError(error, res);
   }
+};
+
+export const clearAndSetCookie = (res: Response, token: string) => {
+  res.clearCookie(COOKIE_NAME, {
+    httpOnly: true,
+    domain: "localhost",
+    signed: true,
+    path: "/",
+  });
+
+  const cookieOptions = {
+    httpOnly: true,
+    signed: true,
+    secure: NODE_ENV === 'production',
+    maxAge: 3600000,
+    path: "/"
+  };
+
+  res.cookie(COOKIE_NAME, token, cookieOptions);
 };
 
 export const createToken = (rollnumber: string, role: string, expiresIn: string) => {

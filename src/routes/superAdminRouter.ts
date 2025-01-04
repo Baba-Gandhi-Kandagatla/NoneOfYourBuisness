@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { verifyTokenStudent } from "../utils/token-manager.js";
+import { verifyTokenSuperAdmin } from "../utils/token-manager.js";
 
 const superAdminRouter = Router();
 

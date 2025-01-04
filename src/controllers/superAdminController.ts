@@ -90,7 +90,7 @@ export const getColleges = async (req: Request, res: Response) => {
     }
 };
 
-export const getAdminsByCollege = async (req: Request, res: Response) => {
+export const getAdminsByCollegeId = async (req: Request, res: Response) => {
     const collageId = req.params.collegeId;
     try {
         const admins = await Admin.findAll(

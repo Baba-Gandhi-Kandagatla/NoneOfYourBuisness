@@ -89,10 +89,22 @@ Student.init(
         if (student.password) {
           student.password = await bcrypt.hashSync(student.password, process.env.SALT_ROUNDS || 10);
         }
+        if(student.studentname){
+          student.studentname = student.studentname.toUpperCase();
+        }
+        if(student.rollNumber){
+          student.rollNumber = student.rollNumber.toUpperCase();
+        }
       },
       async beforeUpdate(student: Student) {
         if (student.password && student.changed('password')) {
           student.password = await bcrypt.hashSync(student.password, process.env.SALT_ROUNDS || 10);
+        }
+        if(student.studentname && student.changed('studentname')){
+          student.studentname = student.studentname.toUpperCase();
+        }
+        if(student.rollNumber && student.changed('rollNumber')){
+          student.rollNumber = student.rollNumber.toUpperCase();
         }
       }
     }

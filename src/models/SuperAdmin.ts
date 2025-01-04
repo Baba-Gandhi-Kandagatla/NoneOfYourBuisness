@@ -36,19 +36,19 @@ SuperAdmin.init(
     tableName: 'superAdmin',
     hooks: {
       beforeCreate: async (user: SuperAdmin) => {
-        if(user.password){
-          user.password = bcrypt.hashSync(user.password, process.env.SALT_ROUNDS || 10);
+        if(user.dataValues.password){
+          user.dataValues.password = bcrypt.hashSync(user.dataValues.password, parseInt(process.env.SALT_ROUNDS) || 10);
         }
-        if(user.superAdminName){
-          user.superAdminName = user.superAdminName.toUpperCase();
+        if(user.dataValues.superAdminName){
+          user.dataValues.superAdminName = user.dataValues.superAdminName.toUpperCase();
         }
       },
       beforeUpdate:async (user: SuperAdmin) => {
-        if(user.password && user.changed('password')){
-          user.password = bcrypt.hashSync(user.password, process.env.SALT_ROUNDS || 10);
+        if(user.dataValues.password && user.changed('password')){
+          user.dataValues.password = bcrypt.hashSync(user.dataValues.password, process.env.SALT_ROUNDS || 10);
         }
-        if(user.superAdminName && user.changed('superAdminName')){
-          user.superAdminName = user.superAdminName.toUpperCase();
+        if(user.dataValues.superAdminName && user.changed('superAdminName')){
+          user.dataValues.superAdminName = user.dataValues.superAdminName.toUpperCase();
         }
       },
       afterSync: async () => {
@@ -56,7 +56,7 @@ SuperAdmin.init(
         if (count === 0 && process.env.SUPERADMIN_NAME && process.env.SUPERADMIN_PASSWORD) {
           await SuperAdmin.create({
             superAdminName: process.env.SUPERADMIN_NAME ,
-            password: process.env.SUPERADMIN_PASSWORD ,
+            password:bcrypt.hashSync(process.env.SUPERADMIN_PASSWORD, parseInt(process.env.SALT_ROUNDS) || 10),
           });
         }
       },

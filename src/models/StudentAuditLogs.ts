@@ -1,27 +1,23 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../db/connection.js';
 import Admin from './Admin.js';
-import Student from './Student.js';
+import Student from './student.js';
 
-export interface IAuditLog {
+export interface IStudentAuditLog {
   logId: bigint;
   rollNumber: string;
   ipaddress: string;
   event: string;
-  userType: string;
-  time: Date;
 }
 
-class AuditLog extends Model<IAuditLog> implements IAuditLog {
+class StudentAuditLog extends Model<IStudentAuditLog> implements IStudentAuditLog {
   public logId!: bigint;
   public rollNumber!: string;
   public ipaddress!: string;
   public event!: string;
-  public userType!: string;
-  public time!: Date;
 }
 
-AuditLog.init(
+StudentAuditLog.init(
   {
     logId: {
       type: DataTypes.BIGINT,
@@ -40,24 +36,16 @@ AuditLog.init(
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    userType: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    time: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
   },
   {
     sequelize,
-    modelName: 'AuditLog',
-    tableName: 'auditLogs',
+    modelName: 'StudentAuditLog',
+    tableName: 'studentAuditLogs',
   }
 );
 
 
-AuditLog.belongsTo(Student, { foreignKey: 'roll_number' });
-AuditLog.belongsTo(Admin, { foreignKey: 'roll_number' });
+StudentAuditLog.belongsTo(Student, { foreignKey: 'roll_number' });
+StudentAuditLog.belongsTo(Admin, { foreignKey: 'roll_number' });
 
-export default AuditLog;
+export default StudentAuditLog;

@@ -3,6 +3,11 @@ import sequelize from '../db/connection.js';
 import Department from './Department.js';
 import College from './College.js';
 import bcrypt from 'bcrypt';
+import Resume from './Resume.js';
+import InterviewExchange from './InterviewExchanges.js';
+import Interview from './Interview.js';
+import InterviewToDepartment from './InterviewToDepartments.js';
+import InterviewInstance from './InterviewInstances.js';
 
 export interface IStudent {
   rollNumber: string;
@@ -82,7 +87,9 @@ Student.init(
   }
 );
 
-Student.belongsTo(Department, { foreignKey: 'department_id' });
-Student.belongsTo(College, { foreignKey: 'college_id' });
+Student.belongsTo(Department, { foreignKey: 'departmentId' });
+Student.belongsTo(College, { foreignKey: 'collegeId' });
+Student.hasMany(Resume, { foreignKey: 'rollNumber' });
+Student.hasMany(InterviewInstance, { foreignKey: 'rollNumber' });
 
 export default Student;

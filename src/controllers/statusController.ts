@@ -32,8 +32,7 @@ export const verifyUser = (req: Request, res: Response) => {
             }
             res.status(200).json({ id, role });
         }).catch((error) => {
-            console.error('Student find error:', error);
-            res.status(500).json({ error: 'Internal server error' });
+            handleError(res, error, 'Student find error:');
         });
     } else if (role === 'admin') {
         Admin.findByPk(id).then((admin) => {
@@ -42,8 +41,7 @@ export const verifyUser = (req: Request, res: Response) => {
             }
             res.status(200).json({ id, role });
         }).catch((error) => {
-            console.error('Admin find error:', error);
-            res.status(500).json({ error: 'Internal server error' });
+            handleError(res, error, 'Admin find error:');
         });
     } else if (role === 'superadmin') {
         SuperAdmin.findByPk(id).then((superadmin) => {
@@ -52,8 +50,7 @@ export const verifyUser = (req: Request, res: Response) => {
             }
             res.status(200).json({ id, role });
         }).catch((error) => {
-            console.error('SuperAdmin find error:', error);
-            res.status(500).json({ error: 'Internal server error' });
+            handleError(res, error, 'SuperAdmin find error:');
         });
     } else {
         res.status(403).json({ error: 'Access denied' });

@@ -1,6 +1,6 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../db/connection.js';
-import Student from './student.js';
+import Student from './Student.js';
 
 export interface IEvalMetrics {
   evalMetricsId: bigint;

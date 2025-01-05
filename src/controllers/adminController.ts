@@ -6,7 +6,7 @@ import InterviewInstance from "../models/InterviewInstances.js";
 import XLSX from "xlsx";
 import multer from "multer";
 import Admin from "../models/Admin.js";
-import Student from "../models/student.js";
+import Student from "../models/Student.js";
 import College from "../models/College.js";
 import Department from "../models/Department.js";
 import InterviewToDepartment from "../models/InterviewToDepartments.js";

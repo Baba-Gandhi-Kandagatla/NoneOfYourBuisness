@@ -2,10 +2,14 @@ import { Request, Response } from 'express';
 import SuperAdmin from '../models/SuperAdmin.js';
 import Admin from '../models/Admin.js';
 import College from '../models/College.js';
-import { createToken } from '../utils/token-manager.js';
+import { createToken, clearAndSetCookie } from '../utils/token-manager.js';
 import bcrypt from 'bcrypt';
-import { clearAndSetCookie } from '../utils/token-manager.js';
-import exp from 'constants';
+
+const handleError = (res: Response, error: any, message: string) => {
+    console.error(message, error);
+    res.status(500).json({ error: 'Internal server error' });
+};
+
 
 export const login = async (req: Request, res: Response) => {
     const {superAdminId, password} = req.body;
@@ -14,7 +18,7 @@ export const login = async (req: Request, res: Response) => {
         if (!superAdmin) {
             return res.status(404).json({error: 'SuperAdmin not found'});
         }
-        if (!bcrypt.compareSync(password, superAdmin.password)) {
+        if (!bcrypt.compare(password, superAdmin.password)) {
             return res.status(401).json({error: 'Invalid password'});
         }
         const token = createToken(superAdmin.superAdminId.toString(), 'superadmin', '1h');
@@ -26,8 +30,7 @@ export const login = async (req: Request, res: Response) => {
         };
         res.status(200).json({userInfo, message: 'Login successful'});
     } catch (error) {
-        console.error('SuperAdmin login error:', error);
-        res.status(500).json({error: 'Internal server error'});
+        handleError(res, error, 'SuperAdmin login error:');
     }
 };
 
@@ -41,8 +44,7 @@ export const addSuperAdmin = async (req: Request, res: Response) => {
         await SuperAdmin.create({superAdminId, superAdminName, password});
         res.status(201).json({message: 'SuperAdmin added successfully'});
     } catch (error) {
-        console.error('SuperAdmin add error:', error);
-        res.status(500).json({error: 'Internal server error'});
+        handleError(res, error, 'SuperAdmin add error:');
     }
 };
 export const addCollege = async (req: Request, res: Response) => {
@@ -55,8 +57,7 @@ export const addCollege = async (req: Request, res: Response) => {
         await College.create({collegeName, defaultStudentPassword});
         res.status(201).json({message: 'College added successfully'});
     } catch (error) {
-        console.error('College add error:', error);
-        res.status(500).json({error: 'Internal server error'});
+        handleError(res, error, 'College add error:');
     }
 };
 
@@ -67,16 +68,15 @@ export const addAdmin = async (req: Request, res: Response) => {
         if (admin) {
             return res.status(409).json({error: 'Admin already exists'});
         }
-        const college = await College.findOne({ where: { collegeName } });
+        const college = await College.findOne({ where: { collegeName } , raw: true});
         if (!college) {
             return res.status(404).json({error: 'College not found'});
         }
-        const collegeId = college.get().collegeId;
+        const collegeId = college.collegeId;
         await Admin.create({adminId, adminName, password, collegeId});
         res.status(201).json({message: 'Admin added successfully'});
     } catch (error) {
-        console.error('Admin add error:', error);
-        res.status(500).json({error: 'Internal server error'});
+        handleError(res, error, 'Admin add error:');
     }
 };
 
@@ -85,8 +85,7 @@ export const getColleges = async (req: Request, res: Response) => {
         const colleges = await College.findAll();
         res.status(200).json(colleges);
     } catch (error) {
-        console.error('Colleges get error:', error);
-        res.status(500).json({error: 'Internal server error'});
+        handleError(res, error, 'Colleges get error:');
     }
 };
 
@@ -102,8 +101,7 @@ export const getAdminsByCollegeId = async (req: Request, res: Response) => {
         );
         res.status(200).json(admins);
     } catch (error) {
-        console.error('Admins get error:', error);
-        res.status(500).json({error: 'Internal server error'});
+        handleError(res, error, 'Admins get error:');
     }
 };
 
@@ -112,8 +110,7 @@ export const getSuperAdmins = async (req: Request, res: Response) => {
         const superAdmins = await SuperAdmin.findAll();
         res.status(200).json(superAdmins);
     } catch (error) {
-        console.error('SuperAdmins get error:', error);
-        res.status(500).json({error: 'Internal server error'});
+        handleError(res, error, 'SuperAdmins get error:');
     }
 };
 
@@ -128,8 +125,7 @@ export const deleteCollege = async (req: Request, res: Response) => {
         await college.destroy();
         res.status(200).json({message: 'College deleted successfully'});
     } catch (error) {
-        console.error('College delete error:', error);
-        res.status(500).json({error: 'Internal server error'});
+        handleError(res, error, 'College delete error:');
     }
 };
 
@@ -143,8 +139,7 @@ export const deleteAdmin = async (req: Request, res: Response) => {
         await admin.destroy();
         res.status(200).json({message: 'Admin deleted successfully'});
     } catch (error) {
-        console.error('Admin delete error:', error);
-        res.status(500).json({error: 'Internal server error'});
+        handleError(res, error, 'Admin delete error:');
     }
 };
 
@@ -158,8 +153,7 @@ export const deleteSuperAdmin = async (req: Request, res: Response) => {
         await superAdmin.destroy();
         res.status(200).json({message: 'SuperAdmin deleted successfully'});
     } catch (error) {
-        console.error('SuperAdmin delete error:', error);
-        res.status(500).json({error: 'Internal server error'});
+        handleError(res, error, 'SuperAdmin delete error:');
     }
 };
 

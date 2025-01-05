@@ -267,3 +267,48 @@ export const studentLogin = async (req: Request, res: Response) => {
   }
 };
 
+
+
+export const getStudentAttendance = async (req: Request, res: Response) => {
+  const rollNumber = res.locals.jwtData.rollnumber;
+  try {
+    const user = await Student.findOne({ where: { rollNumber: rollNumber } });
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+    const interviews = await Interview.findAll({
+      include: [{
+        model: InterviewToDepartment,
+        where: {
+          department_id: user.departmentId, 
+        },
+        required: true, 
+      },
+    ],
+      where: {
+        collageId: user.collegeId, 
+      },
+    });
+    const interviewInstances = await InterviewInstance.findAll({ where: { studentRollNumber: user.get().rollNumber } });
+    const attendance = interviewInstances.length / interviews.length;
+    res.status(200).json({ attendance });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+
+
+export const getStudentMarksByInterview = async (req: Request, res: Response) => {
+  const rollNumber = res.locals.jwtData.rollnumber;
+  try {
+    const user = await Student.findOne({ where: { rollNumber: rollNumber } });
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+    const interviewInstancesMarks = await InterviewInstance.findAll({ where: { studentRollNumber: user.get().rollNumber } , attributes: ['marks']});
+    res.status(200).json(interviewInstancesMarks);
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error." });
+  }
+};

@@ -59,6 +59,33 @@ Student.init(
     password: {
       type: DataTypes.STRING,
       allowNull: false,
+      validate: {
+        isLongEnough(value: string) {
+          if (value.length < 8) {
+            throw new Error("Password should contain at least 8 characters");
+          }
+        },
+        hasUpperCase(value: string) {
+          if (!/[A-Z]/.test(value)) {
+            throw new Error("Password should contain at least one uppercase letter");
+          }
+        },
+        hasLowerCase(value: string) {
+          if (!/[a-z]/.test(value)) {
+            throw new Error("Password should contain at least one lowercase letter");
+          }
+        },
+        hasNumber(value: string) {
+          if (!/[0-9]/.test(value)) {
+            throw new Error("Password should contain at least one number");
+          }
+        },
+        hasSpecialChar(value: string) {
+          if (!/[\W_]/.test(value)) {
+            throw new Error("Password should contain at least one special character");
+          }
+        },
+      },
     },
     collegeId: {
       type: DataTypes.BIGINT,

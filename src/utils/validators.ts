@@ -22,6 +22,12 @@ export const validate = (validations:ValidationChain[])=>{
 
 
 export const loginValidator = [
-    body("password").trim().isLength({min:2}).withMessage("Password should contain atleast 6 charecters"),
+    body("password")
+        .trim()
+        .isLength({ min: 8 }).withMessage("Password should contain at least 8 characters")
+        .matches(/[A-Z]/).withMessage("Password should contain at least one uppercase letter")
+        .matches(/[a-z]/).withMessage("Password should contain at least one lowercase letter")
+        .matches(/[0-9]/).withMessage("Password should contain at least one number")
+        .matches(/[\W_]/).withMessage("Password should contain at least one special character"),
 ];
 

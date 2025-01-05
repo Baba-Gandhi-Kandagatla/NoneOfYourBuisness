@@ -2,7 +2,9 @@ import { Request, Response } from "express";
 import {  compare } from "bcrypt";
 import multer  from "multer";
 import mammoth from "mammoth";
+import path from "path";
 import { promises as fsPromises } from 'fs';
+
 import InterviewToDepartment from "../models/InterviewToDepartments.js";
 import Resume from "../models/Resume.js";
 import InterviewInstance from "../models/InterviewInstances.js";
@@ -10,13 +12,13 @@ import InterviewExchange from "../models/InterviewExchanges.js";
 import Feedback from "../models/Feedback.js";
 import Interview from "../models/Interview.js";
 import Student from "../models/Student.js";
-import path from "path";
-import { generateResumeSummary } from "../apiHelper/helper.js";
-import { clearAndSetCookie, createToken } from "../utils/token-manager.js";
-import { handleError } from "../utils/util.js";
 import EvalMetrics from "../models/EvalMetrics.js";
 import Department from "../models/Department.js";
 import College from "../models/College.js";
+
+import { generateResumeSummary } from "../apiHelper/helper.js";
+import { clearAndSetCookie, createToken } from "../utils/token-manager.js";
+import { handleError } from "../utils/util.js";
 
 
 export const studentLogin = async (req: Request, res: Response) => {

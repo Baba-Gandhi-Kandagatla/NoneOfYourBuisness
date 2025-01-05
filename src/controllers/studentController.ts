@@ -164,27 +164,21 @@ export const uploadResume = [
 
       res.status(200).json({ message: "Resume uploaded and saved successfully." });
     } catch (error) {
-      console.error("Upload resume error:", error);
-
       if (req.file && req.file.path) {
         await fsPromises.unlink(req.file.path).catch((err) => {
           console.error("Error deleting uploaded resume file due to failure:", err);
         });
       }
-
-      res.status(500).json({ message: "Internal server error." });
+      handleError(error, res, "Error uploading resume");
     }
   },
 ];
-
-
 
 export const changePassword = async (req: Request, res: Response) => {
   const rollNumber = res.locals.jwtData.rollnumber;
   const { oldPassword, newPassword } = req.body;
   try {
     const student = await Student.findOne({ where: { rollNumber: rollNumber } });
-
     if (!student) {
       return res.status(404).json({ message: "User not found." });
     }
@@ -198,7 +192,7 @@ export const changePassword = async (req: Request, res: Response) => {
 
     res.status(200).json({ message: "Password changed successfully." });
   } catch (error) {
-    res.status(500).json({ message: "Internal server error." });
+    handleError(error, res, "Error changing password");
   }
 };
 
@@ -207,22 +201,22 @@ export const getInterwievResult = async (req: Request, res: Response) => {
   const rollNumber = res.locals.jwtData.rollnumber;
   const { id } = req.params;
   try {
-    const student = await Student.findOne({ where: { rollNumber: rollNumber } });
+    const student = await getStudentByRollNumber(rollNumber);
     if (!student) {
       return res.status(404).json({ message: "User not found." });
     }
-    const interviewinstance = await InterviewInstance.findOne({ where: { studentRollNumber: student.get().rollNumber, interviewId: id } });
+    const interviewinstance = await InterviewInstance.findOne({ where: { studentRollNumber:  student.rollNumber, interviewId: id } , raw: true });
     if (!interviewinstance) {
       return res.status(404).json({ message: "Interview instance not found." });
     }
-    const interviewExchanges = await InterviewExchange.findAll({ where: { interviewInstanceId: interviewinstance.get().interviewInstanceId } });
+    const interviewExchanges = await InterviewExchange.findAll({ where: { interviewInstanceId: interviewinstance.get().interviewInstanceId }, raw: true });
     if (!interviewExchanges) {
       return res.status(404).json({ message: "Interview exchanges not found." });
     }
-    res.status(200).json({ interviewData:interviewinstance.get(), InterviewExchange: interviewExchanges.map((exchange) => exchange.get()) });
+    res.status(200).json({ interviewData:interviewinstance, InterviewExchange: interviewExchanges.map((exchange) => exchange) });
   }
   catch(error){
-    res.status(500).json({ message: error.message });
+    handleError(error, res, "Error fetching interview result");
   }
 };
 
@@ -230,14 +224,14 @@ export const submitFeedback = async (req: Request, res: Response) => {
   const rollNumber = res.locals.jwtData.rollnumber;
   const { interviewId, feedbackText } = req.body;
   try {
-    const student = await Student.findOne({ where: { rollNumber: rollNumber } });
+    const student = await getStudentByRollNumber(rollNumber);
     if (!student) {
       return res.status(404).json({ message: "User not found." });
     }
-    const feedback = await Feedback.create({ rollNumber: student.get().rollNumber, interviewId: interviewId, feedbackText: feedbackText });
+    const feedback = await Feedback.create({ rollNumber: student.rollNumber, interviewId: interviewId, feedbackText: feedbackText });
     res.status(200).json({ message: "Feedback submitted successfully." });
   } catch (error) {
-    res.status(500).json({ message: "Internal server error." });
+    handleError(error, res, "Error submitting feedback");
   }
 };
 

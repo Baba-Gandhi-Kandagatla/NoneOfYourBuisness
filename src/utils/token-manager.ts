@@ -1,9 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-const COOKIE_NAME = process.env.COOKIE_NAME;
+import dotenv from "dotenv";
+dotenv.config();
+const COOKIE_NAME = process.env.COOKIE_NAME as string;
 const JWT_SECRET = process.env.JWT_SECRET as string;
-const NODE_ENV = process.env.NODE_ENV;
-
+const NODE_ENV = process.env.NODE_ENV as string;
 
 const handleJWTError = (error: any, res: Response) => {
   if (error instanceof jwt.TokenExpiredError) {

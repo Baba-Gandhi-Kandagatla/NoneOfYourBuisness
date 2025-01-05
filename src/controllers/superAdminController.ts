@@ -8,9 +8,9 @@ import { handleError } from '../utils/util.js';
 
 
 export const login = async (req: Request, res: Response) => {
-    const {superAdminId, password} = req.body;
+    const {superAdminName, password} = req.body;
     try {
-        const superAdmin = await SuperAdmin.findByPk(superAdminId);
+        const superAdmin = await SuperAdmin.findOne({where: {superAdminName}, raw: true});
         if (!superAdmin) {
             return res.status(404).json({error: 'SuperAdmin not found'});
         }

@@ -13,12 +13,13 @@ import InterviewExchange from "../models/InterviewExchanges.js";
 import Feedback from "../models/Feedback.js";
 import { generateResumeSummary } from "../apiHelper/helper.js";
 import { clearAndSetCookie, createToken } from "../utils/token-manager.js";
+import { handleError } from "../utils/util.js";
 
 
 async function getStudentByRollNumber(rollNumber: string) 
 {
     try {
-      const student = await Student.findOne({ where: { rollNumber: rollNumber }, raw: true });
+      const student = await Student.findByPk(rollNumber, {raw: true});
       if (!student) {
         throw new Error("User not found.");
       }
@@ -28,61 +29,80 @@ async function getStudentByRollNumber(rollNumber: string)
     }
 }
 
+
 export const getAllInterviews = async (req: Request, res: Response) => {
-    try{
-      const rollNumber = res.locals.jwtData.rollnumber;
-      const user = await getStudentByRollNumber(rollNumber);
-  
-      const interviews = await Interview.findAll({
-          include: [{
-            model: InterviewToDepartment,
-            where: {
-                departmentId: user.departmentId, 
-            },
-            required: true, 
-          }],
+  try{
+    const rollNumber = res.locals.jwtData.rollnumber;
+    const student = await getStudentByRollNumber(rollNumber);
+
+    const interviews = await Interview.findAll({
+        include: [{
+          model: InterviewToDepartment,
           where: {
-            collageId: user.collegeId, 
+            departmentId: student.departmentId, 
           },
-        });
+          required: true, 
+        },
+        {
+          model: InterviewInstance,
+          where: {
+            studentRollNumber: student.rollNumber,
+          },
+          attributes: ['status'],
+          required: false,
+        }
+      ],
+        where: {
+          collageId: student.collegeId, 
+          batchId: student.batchId,
+        },
+      });
+    res.status(200).json({ interviews });
+  }
+  catch(error){
+    handleError(error, res, "Error fetching interviews");
+  }
+}
+
+export const getSpecificInterviews = async (req: Request, res: Response) => {
+  try{
+      const rollNumber = res.locals.jwtData.rollnumber;
+      const student = await getStudentByRollNumber(rollNumber);
+      const interviews = await Interview.findAll({
+        include: [{
+          model: InterviewToDepartment,
+          where: {
+            departmentId: student.departmentId,  
+          },
+          required: true, 
+        },
+        {
+          model: InterviewInstance,
+          where: {
+            studentRollNumber: student.rollNumber,
+            status: "submitted",
+          },
+          required: true,
+        }
+      ],
+        where: {
+          collageId: student.collegeId, 
+          batchId: student.batchId,
+        },
+      });
       res.status(200).json({ interviews });
     }
     catch(error){
-      res.status(500).json({ message: error.message });
+      handleError(error, res, "Error fetching interviews");
     }
-}
-export const getSpecificInterviews = async (req: Request, res: Response) => {
-    try{
-        const rollNumber = res.locals.jwtData.rollnumber;
-        const user = await getStudentByRollNumber(rollNumber);
-        const {status} = req.params;
-    
-        const interviews = await Interview.findAll({
-            include: [{
-              model: InterviewToDepartment,
-              where: {
-                departmentId: user.departmentId, 
-              },
-              required: true, 
-            }],
-            where: {
-              collageId: user.collegeId,
-              status: status,
-            },
-          });
-        res.status(200).json({ interviews });
-      }
-      catch(error){
-        res.status(500).json({ message: error.message });
-      }
-};
+  };
 
 export const get_resume = async (req: Request, res: Response) => {
     try {
       const { rollnumber } = res.locals.jwtData;
   
-      const resume = (await Resume.findOne({ where: { rollNumber: rollnumber } })).get();
-      const resume_context = resume.resumeContext;
+      const resume = await Resume.findOne({ where: { rollNumber: rollnumber }, raw: true }) ;
+      const resumeContext = resume.resumeContext;
       if (!resume || !resume.resumeLocation) {
         return res.status(404).json({ message: "Resume not found" });
       }
@@ -93,7 +113,7 @@ export const get_resume = async (req: Request, res: Response) => {
       try {
         const data = await fsPromises.readFile(resumeFilePath);
         const resume64 = data.toString('base64');
-        res.json({ resume: resume64, resume_context: resume_context });
+        res.json({ resume: resume64, resume_context: resumeContext });
       } catch (error) {
         res.status(500).json({ message: "Error reading resume file." });
       }

@@ -12,7 +12,7 @@ export interface IAdmin {
 }
 
 export interface IAdminPreferences {
-  totalQuestions:Number;
+  noOfQuestions:Number;
   noOfCodingQuestions:Number;
 }
 
@@ -52,12 +52,12 @@ Admin.init(
       type: DataTypes.JSONB,
       allowNull: false,
       defaultValue: {
-        totalQuestions: 10,
+        noOfQuestions: 10,
         noOfCodingQuestions: 5,
       },
       validate: {
         checkTotalQuestions(value: IAdminPreferences) {
-          if (Number(value.noOfCodingQuestions) + Number(value.totalQuestions) > 20) {
+          if (Number(value.noOfCodingQuestions) + Number(value.noOfQuestions) > 20) {
             throw new Error('Total Questions should be less than 20');
           }
         }

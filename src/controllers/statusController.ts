@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import Student from "../models/student.js";
+import Student from "../models/Student.js";
 import Admin from "../models/Admin.js";
 import SuperAdmin from "../models/SuperAdmin.js";
 const COOKIE_NAME = process.env.COOKIE_NAME;

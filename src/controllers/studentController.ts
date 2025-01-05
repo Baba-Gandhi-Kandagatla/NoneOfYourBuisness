@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import {  compare } from "bcrypt";
 import Interview from "../models/Interview.js";
-import Student from "../models/student.js";
+import Student from "../models/Student.js";
 import multer  from "multer";
 import mammoth from "mammoth";
 import { promises as fsPromises } from 'fs';

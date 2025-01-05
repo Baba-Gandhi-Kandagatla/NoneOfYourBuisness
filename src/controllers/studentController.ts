@@ -115,11 +115,10 @@ export const get_resume = async (req: Request, res: Response) => {
         const resume64 = data.toString('base64');
         res.json({ resume: resume64, resume_context: resumeContext });
       } catch (error) {
-        res.status(500).json({ message: "Error reading resume file." });
+        handleError(error, res, "Error reading resume file");
       }
     } catch (error) {
-      console.error("Error fetching resume:", error);
-      return res.status(500).json({ message: "Internal Server Error" });
+      handleError(error, res, "Error fetching resume");
     }
 };
 
@@ -139,26 +138,26 @@ export const uploadResume = [
 
       const result = await mammoth.extractRawText({ path: newFilePath });
       const extractedText = result.value;
-      const simple = await generateResumeSummary(extractedText);
+      const resumeContext = await generateResumeSummary(extractedText);
 
-      const existingResume = await Resume.findOne({ where: { rollNumber: rollNumber } });
+      const existingResume = await Resume.findOne({ where: { rollNumber: rollNumber }, raw: true });
 
       if (existingResume) {
-        const oldFilePath = existingResume.get().resumeLocation;
+        const oldFilePath = existingResume.resumeLocation;
         if (oldFilePath) {
           await fsPromises.unlink(oldFilePath).catch((err) => {
-            res.status(500).json({ message: "Error deleting old resume file." });
+            handleError(err, res, "Error deleting old resume file");
           });
         }
 
         await existingResume.update({
           resumeLocation: newFilePath,
-          resumeContext: simple,
+          resumeContext: resumeContext,
         });
       } else {
         await Resume.create({
           resumeLocation: newFilePath,
-          resumeContext: simple,
+          resumeContext: resumeContext,
           rollNumber: rollNumber,
         });
       }

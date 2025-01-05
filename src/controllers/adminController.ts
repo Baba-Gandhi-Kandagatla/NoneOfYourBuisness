@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { raw, Request, Response } from "express";
 import { Sequelize, where } from "sequelize";
 import bcrypt, { compare, hash } from "bcrypt";
 import Interview from "../models/Interview.js";
@@ -20,7 +20,7 @@ import { clearAndSetCookie, createToken } from "../utils/token-manager.js";
 export const adminLogin = async (req: Request, res: Response) => {
   const { adminId, password } = req.body;
   try {
-    const admin = await Admin.findOne({ where: { adminId: adminId } });
+    const admin = await Admin.findByPk(adminId);
     if (!admin) {
       return res.status(404).json({ message: "User not found." });
     }
@@ -68,83 +68,81 @@ export const getDefaultPassword = async (req: Request, res: Response) => {
   }
 };
 
-// export const setDefaultPassword = async (req: Request, res: Response) => {
-//   try {
-//     const rollnumber = res.locals.jwtData.rollnumber;
-//     const newPassword = req.body.newPassword;
-//     console.log("New password", newPassword);
-//     const admin = (await Admin.findOne({ where: { roll_number: rollnumber } })).get();
+export const setDefaultPassword = async (req: Request, res: Response) => {
+  try {
+    const adminId = res.locals.jwtData.adminId;
+    const newPassword = req.body.newPassword;
+    console.log("New password", newPassword);
+    const admin = (await Admin.findOne({ where: { adminId: adminId } })).get();
     
-//     if (!admin) {
-//       return res.status(404).json({ message: "Admin not found." });
-//     }
-//     const college = await College.findOne({ where: { id: admin.college_id } });
-//     if (!college) {
-//       return res.status(404).json({ message: "College not found." });
-//     }
-//     const newStudentPassword = await Hashing(newPassword);
-//     console.log("New college password", newPassword);
-//     await college.update({ defaultPassword: newPassword });
-//     console.log("updated password for college");
-//     const students = await Student.findAll({ where: { college_id: admin.college_id } });
-//     students.forEach(async (student) => {
-//       await student.update({ password: newStudentPassword });
-//     });
-//     console.log("updated password for students \n\n\n");
-//     return res.status(200).json({ success:true, message: "Password updated successfully." });
-//   } catch (error) {
-//     console.error("Error updating password:", error);
-//     res.status(500).json({ message: "Internal server error." });
-//   }
-// };
+    if (!admin) {
+      return res.status(404).json({ message: "Admin not found." });
+    }
+    const college = await College.findOne({ where: { collegeId: admin.collegeId } });
+    if (!college) {
+      return res.status(404).json({ message: "College not found." });
+    }
+    await college.update({ defaultStudentPassword: newPassword });
+    console.log("updated password for college");
+    const students = await Student.findAll({ where: { collegeId: admin.collegeId } });
+    students.forEach(async (student) => {
+      await student.update({ password: newPassword });
+    });
+    console.log("updated password for students \n\n\n");
+    return res.status(200).json({ success:true, message: "Password updated successfully." });
+  } catch (error) {
+    console.error("Error updating password:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
 
-// export const addStudent = async (req: Request, res: Response) => {
-//   try {
-//     const rollnumber = res.locals.jwtData.rollnumber;
-//     const admin = (
-//       await Admin.findOne({ where: { roll_number: rollnumber } })
-//     ).get();
+export const addStudent = async (req: Request, res: Response) => {
+  try {
+    const adminId = res.locals.jwtData.adminId;
+    const admin = (
+      await Admin.findOne({ where: { adminId: adminId } })
+    ).get();
 
-//     const studentData = req.body;
-//     const existingStudent = await Student.findOne({
-//       where: { roll_number: studentData.rollnumber },
-//     });
-//     if (existingStudent) {
-//       return res.status(409).json({ message: "Student already exists." });
-//     }
-//     const departmentid = await Department.findOne({
-//       where: {
-//         college_id: admin.college_id,
-//         name: studentData.department_name,
-//       },
-//     });
-//     if (!departmentid) {
-//       return res.status(404).json({ message: "Department not found." });
-//     }
-//     const department = departmentid.get();
+    const studentData = req.body;
+    const existingStudent = await Student.findOne({
+      where: { rollNumber: studentData.rollNumber },
+    });
+    if (existingStudent) {
+      return res.status(409).json({ message: "Student already exists." });
+    }
+    const departmentId = await Department.findOne({
+      where: {
+        collegeId: admin.collegeId,
+        departmentName: studentData.departmentName,
+      },
+      raw: true
+    });
+    if (!departmentId) {
+      return res.status(404).json({ message: "Department not found." });
+    }
+    const department = departmentId;
 
-//     const defaultPassword = await College.findOne({
-//       where: { id: admin.college_id },
-//     }).then((college) => college.get().defaultPassword);
+    const defaultPassword = await College.findOne({
+      where: { collegeId: admin.collegeId },
+    }).then((college) => college.get().defaultStudentPassword);
 
-//     const newPassword = await Hashing(defaultPassword);
-//     await Student.create({
-//       roll_number: studentData.rollnumber,
-//       username: studentData.name,
-//       year: studentData.year,
-//       semester: 1,
-//       department_id: department.id,
-//       section: "default",
-//       password: newPassword,
-//       college_id: admin.college_id,
-//     });
-//     console.log("Student added successfully.",Student);
-//     res.status(201).json({ message: "Student added successfully." });
-//   } catch (error) {
-//     console.error("Error adding student:", error);
-//     res.status(500).json({ message: "Internal server error." });
-//   }
-// };
+    await Student.create({
+      rollNumber: studentData.rollNumber,
+      studentname: studentData.studentName,
+      batchId: studentData.year,
+      department_id: department.id,
+      section: "default",
+      password: newPassword,
+      college_id: admin.college_id,
+    });
+    console.log("Student added successfully.",Student);
+    res.status(201).json({ message: "Student added successfully." });
+  } catch (error) {
+    console.error("Error adding student:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
+
 // export const addDepartment = async (req: Request, res: Response) => {
 //   try {
 //     const { name } = req.body;

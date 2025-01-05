@@ -98,6 +98,7 @@ export const setDefaultPassword = async (req: Request, res: Response) => {
 };
 
 export const addStudent = async (req: Request, res: Response) => {
+  // add eval metrix, add resume, 
   try {
     const adminId = res.locals.jwtData.adminId;
     const admin = (
@@ -282,7 +283,7 @@ export const addBatch = async (req: Request, res: Response) => {
 //     const updatedData = req.body;
 //     const admin = (
 //       await Admin.findOne({
-//         where: { roll_number: res.locals.jwtData.rollnumber },
+//         where: { roll_number: res.locals.jwtData.id },
 //       })
 //     ).get();
 //     const student = await Student.findOne({
@@ -305,7 +306,7 @@ export const addBatch = async (req: Request, res: Response) => {
 
 // export const createInterview = async (req: Request, res: Response) => {
 //   try {
-//     const rollnumber = res.locals.jwtData.rollnumber;
+//     const rollnumber = res.locals.jwtData.id;
 //     const admin = await Admin.findOne({ where: { roll_number: rollnumber } });
 
 //     if (!admin) {
@@ -365,7 +366,7 @@ export const addBatch = async (req: Request, res: Response) => {
 
 // export const getAllInterviewsA = async (req: Request, res: Response) => {
 //   try {
-//     const rollnumber = res.locals.jwtData.rollnumber;
+//     const rollnumber = res.locals.jwtData.id;
 //     const user = (await Admin.findOne({ where: { roll_number: rollnumber } })).get();
     
 //     const interviews = await Interview.findAll({
@@ -494,7 +495,7 @@ export const addBatch = async (req: Request, res: Response) => {
 // export const addStudents = [
 //   upload.single("studentsFile"),
 //   async (req: Request & { file: Express.Multer.File }, res: Response) => {
-//     const rollnumber = res.locals.jwtData.rollnumber;
+//     const rollnumber = res.locals.jwtData.id;
 //     const year = req.body.year
 
 //     if (!req.file) {
@@ -619,7 +620,7 @@ export const addBatch = async (req: Request, res: Response) => {
 // };
 
 // export const changePassword = async (req: Request, res: Response) => {
-//     const rollnumber = res.locals.jwtData.rollnumber;
+//     const rollnumber = res.locals.jwtData.id;
 //     const { oldPassword, newPassword } = req.body;
 //     console.log("Change password request:", req.body);
 
@@ -647,7 +648,7 @@ export const addBatch = async (req: Request, res: Response) => {
 
 // export const getAttendance = async (req, res) => {
 //   try {
-//     const admin_rollnumber = res.locals.jwtData.rollnumber; 
+//     const admin_rollnumber = res.locals.jwtData.id; 
 //     const interviewId = req.params.id;
 //     const interview = await Interview.findByPk(interviewId);
 //     if (!interview) {
@@ -758,7 +759,7 @@ export const addBatch = async (req: Request, res: Response) => {
 
 // export const deleteAllStudents = async (req: Request, res: Response) => {
 //   try {
-//     const rollnumber = res.locals.jwtData.rollnumber;
+//     const rollnumber = res.locals.jwtData.id;
 //     const year = req.query.year;
 
 //     const admin = (await Admin.findOne({ where: { roll_number: rollnumber } })).get()
@@ -778,7 +779,7 @@ export const addBatch = async (req: Request, res: Response) => {
 
 // export const view_student = async(req: Request, res: Response) => {
 //   try {
-//     const admin_rollnumber = res.locals.jwtData.rollnumber;
+//     const admin_rollnumber = res.locals.jwtData.id;
 //     const student_rollnumber = req.params.rollnumber;
 
 //     const admin = (await Admin.findOne({ where: { roll_number: admin_rollnumber } })).get();
@@ -809,7 +810,7 @@ export const addBatch = async (req: Request, res: Response) => {
 
 // export const resetStudentPassword = async (req: Request, res: Response) => {
 //   try {
-//     const adminRollNumber = res.locals.jwtData.rollnumber;
+//     const adminRollNumber = res.locals.jwtData.id;
 //     const studentRollNumber = req.params.rollnumber;
 
 //     const admin = (await Admin.findOne({ where: { roll_number: adminRollNumber } })).get();
@@ -846,7 +847,7 @@ export const addBatch = async (req: Request, res: Response) => {
 
 // export const setPreferences = async (req: Request, res: Response) => {
 //   try {
-//     const rollnumber = res.locals.jwtData.rollnumber;
+//     const rollnumber = res.locals.jwtData.id;
 //     const admin = (await Admin.findOne({ where: { roll_number: rollnumber } }));
 //     if (!admin) {
 //       return res.status(404).json({ message: "Admin not found." });
@@ -865,7 +866,7 @@ export const addBatch = async (req: Request, res: Response) => {
 
 // export const getPreferences = async (req: Request, res: Response) => {
 //   try {
-//     const rollnumber = res.locals.jwtData.rollnumber;
+//     const rollnumber = res.locals.jwtData.id;
 //     const admin = (await Admin.findOne({ where: { roll_number: rollnumber } }));
 //     if (!admin) {
 //       return res.status(404).json({ message: "Admin not found." });
@@ -879,7 +880,7 @@ export const addBatch = async (req: Request, res: Response) => {
 // }
 
 // export const getInterwievResult = async (req: Request, res: Response) => {
-//   const aroll = res.locals.jwtData.rollnumber;
+//   const aroll = res.locals.jwtData.id;
 //   const { id, rollNumber } = req.params;
 //   try {
 //     const admin = await Admin.findOne({ where: { roll_number: aroll } });
@@ -910,7 +911,7 @@ export const addBatch = async (req: Request, res: Response) => {
 
 
 // export const getStudentAttendance = async (req: Request, res: Response) => {
-//   const aroll = res.locals.jwtData.rollnumber;
+//   const aroll = res.locals.jwtData.id;
 //   const {rollNumber} =req.params;
 //   try {
 //     const admin = await Admin.findOne({ where: { roll_number: aroll } });
@@ -946,7 +947,7 @@ export const addBatch = async (req: Request, res: Response) => {
 
 
 // export const getStudentMarksByInterview = async (req: Request, res: Response) => {
-//   const aroll = res.locals.jwtData.rollnumber;
+//   const aroll = res.locals.jwtData.id;
 //   const {rollNumber} = req.params;
 //   try {
 //     const admin = await Admin.findOne({ where: { roll_number: aroll } });

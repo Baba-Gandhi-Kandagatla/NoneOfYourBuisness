@@ -58,8 +58,8 @@ export const clearAndSetCookie = (res: Response, token: string) => {
   res.cookie(COOKIE_NAME, token, cookieOptions);
 };
 
-export const createToken = (rollnumber: string, role: string, expiresIn: string) => {
-  const payload = { rollnumber, role };
+export const createToken = (id: string, role: string, expiresIn: string) => {
+  const payload = { id, role };
   console.log("JWT_SECRET", JWT_SECRET);
   return jwt.sign(payload, JWT_SECRET, { expiresIn });
 };

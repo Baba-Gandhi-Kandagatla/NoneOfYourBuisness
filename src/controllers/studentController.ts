@@ -1,21 +1,82 @@
 import { Request, Response } from "express";
 import {  compare } from "bcrypt";
-import Interview from "../models/Interview.js";
-import Student from "../models/Student.js";
 import multer  from "multer";
 import mammoth from "mammoth";
 import { promises as fsPromises } from 'fs';
 import InterviewToDepartment from "../models/InterviewToDepartments.js";
 import Resume from "../models/Resume.js";
-import path from "path";
 import InterviewInstance from "../models/InterviewInstances.js";
 import InterviewExchange from "../models/InterviewExchanges.js";
 import Feedback from "../models/Feedback.js";
+import Interview from "../models/Interview.js";
+import Student from "../models/Student.js";
+import path from "path";
 import { generateResumeSummary } from "../apiHelper/helper.js";
 import { clearAndSetCookie, createToken } from "../utils/token-manager.js";
 import { handleError } from "../utils/util.js";
-import { get } from "https";
+import EvalMetrics from "../models/EvalMetrics.js";
+import Department from "../models/Department.js";
+import College from "../models/College.js";
 
+
+export const studentLogin = async (req: Request, res: Response) => {
+  const { rollNumber, password } = req.body;
+  try {
+    const student = await getStudentByRollNumber(rollNumber);
+    if (!student) {
+      return res.status(404).json({ error: "User not found." });
+    }
+    const isPasswordValid = await compare(password, student.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: "Invalid password." });
+    }
+    const token = createToken(
+      student.rollNumber,
+      'student',
+      '1h'
+    );
+
+    clearAndSetCookie(res, token);
+
+    const userInfo = {
+      rollNumber: student.rollNumber,
+      username: student.studentname,
+      role: 'student'
+    };
+
+    res.status(200).json({ ...userInfo, message: 'Login successful' });
+  } catch (error) {
+    handleError(error, res, "Error logging in student");
+  }
+};
+
+export const get_profile = async (req: Request, res: Response) =>{
+  const rollNumber = res.locals.jwtData.id;
+
+  try {
+    const student = await Student.findOne({ where: { rollNumber:rollNumber },
+      include:[
+        {model:EvalMetrics},
+        {model:Department,attributes:['name']},
+        {model:College,attributes:["name"]},
+      ]
+      ,raw: true
+     });
+
+    if (!student) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    const resume = await Resume.findOne({ where: { rollNumber : rollNumber }, raw: true });
+    const resumeData = resume.resumeContext;
+
+    const { password, ...userWithoutPassword } = student;
+
+    res.status(200).json({ student: userWithoutPassword , resume:resumeData });
+  } catch (error) {
+    handleError(error, res, "Error fetching student profile");
+  }
+}
 
 async function getStudentByRollNumber(rollNumber: string) 
 {
@@ -33,7 +94,7 @@ async function getStudentByRollNumber(rollNumber: string)
 
 export const getAllInterviews = async (req: Request, res: Response) => {
   try{
-    const rollNumber = res.locals.jwtData.rollnumber;
+    const rollNumber = res.locals.jwtData.id;
     const student = await getStudentByRollNumber(rollNumber);
 
     const interviews = await Interview.findAll({
@@ -57,6 +118,7 @@ export const getAllInterviews = async (req: Request, res: Response) => {
           collageId: student.collegeId, 
           batchId: student.batchId,
         },
+        raw: true
       });
     res.status(200).json({ interviews });
   }
@@ -65,9 +127,9 @@ export const getAllInterviews = async (req: Request, res: Response) => {
   }
 }
 
-export const getSpecificInterviews = async (req: Request, res: Response) => {
+export const getCompletedInterviews = async (req: Request, res: Response) => {
   try{
-      const rollNumber = res.locals.jwtData.rollnumber;
+      const rollNumber = res.locals.jwtData.id;
       const student = await getStudentByRollNumber(rollNumber);
       const interviews = await Interview.findAll({
         include: [{
@@ -90,6 +152,7 @@ export const getSpecificInterviews = async (req: Request, res: Response) => {
           collageId: student.collegeId, 
           batchId: student.batchId,
         },
+        raw: true
       });
       res.status(200).json({ interviews });
     }
@@ -98,11 +161,11 @@ export const getSpecificInterviews = async (req: Request, res: Response) => {
     }
   };
 
-export const get_resume = async (req: Request, res: Response) => {
+export const getResume = async (req: Request, res: Response) => {
     try {
-      const { rollnumber } = res.locals.jwtData;
+      const { rollNumber } = res.locals.jwtData;
   
-      const resume = await Resume.findOne({ where: { rollNumber: rollnumber }, raw: true }) ;
+      const resume = await Resume.findOne({ where: { rollNumber: rollNumber }, raw: true }) ;
       const resumeContext = resume.resumeContext;
       if (!resume || !resume.resumeLocation) {
         return res.status(404).json({ error: "Resume not found" });
@@ -114,7 +177,7 @@ export const get_resume = async (req: Request, res: Response) => {
       try {
         const data = await fsPromises.readFile(resumeFilePath);
         const resume64 = data.toString('base64');
-        res.json({ resume: resume64, resume_context: resumeContext });
+        res.status(200).json({ resume: resume64, resumeContext: resumeContext });
       } catch (error) {
         handleError(error, res, "Error reading resume file");
       }
@@ -128,7 +191,7 @@ const upload = multer({ dest: 'uploads/' });
 export const uploadResume = [
   upload.single("resume"),
   async (req: Request & { file: Express.Multer.File }, res: Response) => {
-    const rollNumber = res.locals.jwtData.rollnumber;
+    const rollNumber = res.locals.jwtData.id;
 
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded." });
@@ -176,7 +239,7 @@ export const uploadResume = [
 ];
 
 export const changePassword = async (req: Request, res: Response) => {
-  const rollNumber = res.locals.jwtData.rollnumber;
+  const rollNumber = res.locals.jwtData.id;
   const { oldPassword, newPassword } = req.body;
   try {
     const student = await Student.findOne({ where: { rollNumber: rollNumber } });
@@ -199,7 +262,7 @@ export const changePassword = async (req: Request, res: Response) => {
 
 export const getInterwievResult = async (req: Request, res: Response) => {
   
-  const rollNumber = res.locals.jwtData.rollnumber;
+  const rollNumber = res.locals.jwtData.id;
   const { id } = req.params;
   try {
     const student = await getStudentByRollNumber(rollNumber);
@@ -222,7 +285,7 @@ export const getInterwievResult = async (req: Request, res: Response) => {
 };
 
 export const submitFeedback = async (req: Request, res: Response) => {
-  const rollNumber = res.locals.jwtData.rollnumber;
+  const rollNumber = res.locals.jwtData.id;
   const { interviewId, feedbackText } = req.body;
   try {
     const student = await getStudentByRollNumber(rollNumber);
@@ -237,54 +300,23 @@ export const submitFeedback = async (req: Request, res: Response) => {
 };
 
 export const getFeedback = async (req: Request, res: Response) => {
-  const rollNumber = res.locals.jwtData.rollnumber;
+  const rollNumber = res.locals.jwtData.id;
   try {
     const student = await getStudentByRollNumber(rollNumber);
     if (!student) {
       return res.status(404).json({ error: "User not found." });
     }    
-    const feedback = await Feedback.findAll({ where: { rollNumber: student.rollNumber } });
+    const feedback = await Feedback.findAll({ where: { rollNumber: student.rollNumber } , raw: true });
     res.status(200).json({ feedback });
   } catch (error) {
     handleError(error, res, "Error fetching feedback");
   }
 };
 
-export const studentLogin = async (req: Request, res: Response) => {
-  const { rollNumber, password } = req.body;
-  try {
-    const student = await getStudentByRollNumber(rollNumber);
-    if (!student) {
-      return res.status(404).json({ error: "User not found." });
-    }
-    const isPasswordValid = await compare(password, student.password);
-    if (!isPasswordValid) {
-      return res.status(401).json({ error: "Invalid password." });
-    }
-    const token = createToken(
-      student.rollNumber,
-      'student',
-      '1h'
-    );
-
-    clearAndSetCookie(res, token);
-
-    const userInfo = {
-      rollNumber: student.rollNumber,
-      username: student.studentname,
-      role: 'student'
-    };
-
-    res.status(200).json({ ...userInfo, message: 'Login successful' });
-  } catch (error) {
-    handleError(error, res, "Error logging in student");
-  }
-};
-
 
 
 export const getStudentAttendance = async (req: Request, res: Response) => {
-  const rollNumber = res.locals.jwtData.rollnumber;
+  const rollNumber = res.locals.jwtData.id;
   try {
     const student = await getStudentByRollNumber(rollNumber);
     if (!student) {
@@ -303,8 +335,9 @@ export const getStudentAttendance = async (req: Request, res: Response) => {
         collageId: student.collegeId, 
         batchId: student.batchId,
       },
+      raw: true
     });
-    const interviewInstances = await InterviewInstance.findAll({ where: { studentRollNumber: student.rollNumber } });
+    const interviewInstances = await InterviewInstance.findAll({ where: { studentRollNumber: student.rollNumber } , raw: true });
     const attendance = interviewInstances.length / interviews.length;
     res.status(200).json({ attendance });
   } catch (error) {
@@ -315,13 +348,13 @@ export const getStudentAttendance = async (req: Request, res: Response) => {
 
 
 export const getStudentMarksGraph = async (req: Request, res: Response) => {
-  const rollNumber = res.locals.jwtData.rollnumber;
+  const rollNumber = res.locals.jwtData.id;
   try {
     const student = await getStudentByRollNumber(rollNumber);
     if (!student) {
       return res.status(404).json({ error: "Student not found." });
     }
-    const interviewInstancesMarks = await InterviewInstance.findAll({ where: { studentRollNumber: student.rollNumber } , attributes: ['marks']});
+    const interviewInstancesMarks = await InterviewInstance.findAll({ where: { studentRollNumber: student.rollNumber } , attributes: ['marks'], raw: true });
     res.status(200).json(interviewInstancesMarks);
   } catch (error) {
     handleError(error, res, "Error fetching marks");

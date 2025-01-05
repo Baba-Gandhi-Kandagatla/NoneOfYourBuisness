@@ -1,9 +1,10 @@
+import { config } from "dotenv";
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+config();
 const COOKIE_NAME = process.env.COOKIE_NAME;
 const JWT_SECRET = process.env.JWT_SECRET as string;
 const NODE_ENV = process.env.NODE_ENV;
-
 
 const handleJWTError = (error: any, res: Response) => {
   if (error instanceof jwt.TokenExpiredError) {
@@ -58,6 +59,7 @@ export const clearAndSetCookie = (res: Response, token: string) => {
 
 export const createToken = (rollnumber: string, role: string, expiresIn: string) => {
   const payload = { rollnumber, role };
+  console.log("JWT_SECRET", JWT_SECRET);
   return jwt.sign(payload, JWT_SECRET, { expiresIn });
 };
 

@@ -4,11 +4,7 @@ import Admin from '../models/Admin.js';
 import College from '../models/College.js';
 import { createToken, clearAndSetCookie } from '../utils/token-manager.js';
 import bcrypt from 'bcrypt';
-
-const handleError = (res: Response, error: any, message: string) => {
-    console.error(message, error);
-    res.status(500).json({ error: 'Internal server error' });
-};
+import { handleError } from '../utils/util.js';
 
 
 export const login = async (req: Request, res: Response) => {

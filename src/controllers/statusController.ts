@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import Student from "../models/Student.js";
 import Admin from "../models/Admin.js";
 import SuperAdmin from "../models/SuperAdmin.js";
+import { handleError } from "../utils/util.js";
+
 const COOKIE_NAME = process.env.COOKIE_NAME;
 const NODE_ENV = process.env.NODE_ENV;
 
@@ -17,8 +19,7 @@ export const logout = (req: Request, res: Response) => {
       res.clearCookie(COOKIE_NAME, cookieOptions);
       res.status(200).json({ message: 'Logout successful' });
     } catch (error) {
-      console.error('Logout error:', error);
-      res.status(500).json({ message: 'Internal server error.' });
+        handleError(res, error, 'Logout error:');
     }
 };
 

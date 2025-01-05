@@ -15,6 +15,7 @@ import EvalMetrics from "../models/EvalMetrics.js";
 import Resume from "../models/Resume.js";
 import { deprecate } from "util";
 import { clearAndSetCookie, createToken } from "../utils/token-manager.js";
+import Batch from "../models/Batch.js";
 
 
 export const adminLogin = async (req: Request, res: Response) => {
@@ -106,21 +107,29 @@ export const addStudent = async (req: Request, res: Response) => {
     const studentData = req.body;
     const existingStudent = await Student.findOne({
       where: { rollNumber: studentData.rollNumber },
+      raw: true
     });
     if (existingStudent) {
       return res.status(409).json({ message: "Student already exists." });
     }
-    const departmentId = await Department.findOne({
+    const department = await Department.findOne({
       where: {
         collegeId: admin.collegeId,
         departmentName: studentData.departmentName,
       },
       raw: true
     });
-    if (!departmentId) {
+    if (!department) {
       return res.status(404).json({ message: "Department not found." });
     }
-    const department = departmentId;
+   
+    const batch = await Batch.findOne({
+      where: {
+        collegeId: admin.collegeId,
+        batchName: studentData.batchName,
+      },
+      raw: true
+    })
 
     const defaultPassword = await College.findOne({
       where: { collegeId: admin.collegeId },
@@ -129,11 +138,10 @@ export const addStudent = async (req: Request, res: Response) => {
     await Student.create({
       rollNumber: studentData.rollNumber,
       studentname: studentData.studentName,
-      batchId: studentData.year,
-      department_id: department.id,
-      section: "default",
-      password: newPassword,
-      college_id: admin.college_id,
+      batchId: batch.batchId,
+      departmentId: department.departmentId,
+      password: defaultPassword,
+      collegeId: admin.collegeId,
     });
     console.log("Student added successfully.",Student);
     res.status(201).json({ message: "Student added successfully." });
@@ -143,113 +151,114 @@ export const addStudent = async (req: Request, res: Response) => {
   }
 };
 
-// export const addDepartment = async (req: Request, res: Response) => {
-//   try {
-//     const { name } = req.body;
-//     const admin = (
-//       await Admin.findOne({
-//         where: { roll_number: res.locals.jwtData.rollnumber },
-//       })
-//     ).get();
-//     const existingDepartment = await Department.findOne({
-//       where: { college_id: admin.college_id, name },
-//     });
-//     if (existingDepartment) {
-//       return res.status(409).json({ message: "Department already exists." });
-//     }
-//     const newDepartment = await Department.create({
-//       name,
-//       college_id: admin.college_id,
-//     });
-//     res.status(201).json(newDepartment);
-//   } catch (error) {
-//     console.error("Error adding department:", error);
-//     res.status(500).json({ message: "Internal server error." });
-//   }
-// };
+export const addDepartment = async (req: Request, res: Response) => {
+  try {
+    const { departmentName } = req.body;
+    const admin = (
+      await Admin.findOne({
+        where: { adminId: res.locals.jwtData.adminId },
+      })
+    ).get();
+    const existingDepartment = await Department.findOne({
+      where: { collegeId: admin.collegeId, departmentName:departmentName },
+    });
+    if (existingDepartment) {
+      return res.status(409).json({ message: "Department already exists." });
+    }
+    const newDepartment = await Department.create({
+      departmentName: departmentName,
+      collegeId: admin.collegeId,
+    });
+    res.status(201).json(newDepartment);
+  } catch (error) {
+    console.error("Error adding department:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
 
-// export const deleteDepartment = async (req: Request, res: Response) => {
-//   try {
-//     const { department_name } = req.params;
-//     const adminRollNumber = res.locals.jwtData.rollnumber;
-//     const admin = await Admin.findOne({ where: { roll_number: adminRollNumber } });
+export const deleteDepartment = async (req: Request, res: Response) => {
+  try {
+    const { departmentName } = req.params;
+    const adminId = res.locals.jwtData.adminId;
+    const admin = await Admin.findOne({ where: { adminId: adminId }, raw: true });
 
-//     if (!admin) {
-//       return res.status(401).json({ message: "Unauthorized: Admin not found." });
-//     }
+    if (!admin) {
+      return res.status(401).json({ message: "Unauthorized: Admin not found." });
+    }
 
-//     const department = await Department.findOne({
-//       where: {
-//         college_id: admin.get("college_id"),
-//         name: department_name,
-//       },
-//     });
+    const department = await Department.findOne({
+      where: {
+        collegeId: admin.collegeId,
+        departmentName: departmentName,
+      },
+      raw:true
+    });
 
-//     if (!department) {
-//       return res.status(404).json({ message: "Department not found." });
-//     }
+    if (!department) {
+      return res.status(404).json({ message: "Department not found." });
+    }
 
-//     const studentInCollege = await Student.findOne({
-//       where: {
-//         college_id: admin.get("college_id"),
-//         department_id: department.get("id"),
-//       },
-//     });
+    const studentInCollege = await Student.findOne({
+      where: {
+        collegeId: admin.collegeId,
+        departmentId: department.departmentId,
+      },
+    });
 
-//     if (studentInCollege) {
-//       await Student.destroy({
-//         where: {
-//           college_id: admin.get("college_id"),
-//           department_id: department.get("id"),
-//         },
-//       });
-//     }
+    if (studentInCollege) {
+      await Student.destroy({
+        where: {
+          collegeId: admin.collegeId,
+          departmentId: department.departmentId,
+        },
+      });
+    }
 
-//     await department.destroy();
-//     res.status(200).json({ message: "Department deleted successfully." });
-//   } catch (error) {
-//     console.error("Error deleting department:", error);
-//     res.status(500).json({ message: "Internal server error." });
-//   }
-// };
+    await department.destroy();
+    res.status(200).json({ message: "Department deleted successfully." });
+  } catch (error) {
+    console.error("Error deleting department:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
 
-// export const getDepartment = async (req: Request, res: Response) => {
-//   try {
-//     const { id } = req.params;
-//     const admin = (
-//       await Admin.findOne({
-//         where: { roll_number: res.locals.jwtData.rollnumber },
-//       })
-//     ).get();
-//     const department = (
-//       await Department.findOne({ where: { id, college_id: admin.college_id } })
-//     ).get();
-//     if (!department) {
-//       return res.status(404).json({ message: "Department not found." });
-//     }
-//     res.status(200).json(department.name);
-//   } catch (error) {
-//     console.error("Error fetching department:", error);
-//     res.status(500).json({ message: "Internal server error." });
-//   }
-// };
+export const getDepartment = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const admin = (
+      await Admin.findOne({
+        where: { adminId: res.locals.jwtData.adminId },
+      })
+    ).get();
+    const department = (
+      await Department.findOne({ where: { departmentId: id, collegeId: admin.collegeId } })
+    ).get();
+    if (!department) {
+      return res.status(404).json({ message: "Department not found." });
+    }
+    res.status(200).json(department.departmentName);
+  } catch (error) {
+    console.error("Error fetching department:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
 
-// export const getAllDepartments = async (req: Request, res: Response) => {
-//   try {
-//     const admin = (
-//       await Admin.findOne({
-//         where: { roll_number: res.locals.jwtData.rollnumber },
-//       })
-//     ).get();
-//     const departments = await Department.findAll({
-//       where: { college_id: admin.college_id },
-//     });
-//     res.status(200).json(departments);
-//   } catch (error) {
-//     console.error("Error fetching departments:", error);
-//     res.status(500).json({ message: "Internal server error." });
-//   }
-// };
+export const getAllDepartments = async (req: Request, res: Response) => {
+  try {
+    const admin = (
+      await Admin.findOne({
+        where: { adminId: res.locals.jwtData.adminId },
+      })
+    ).get();
+    const departments = await Department.findAll({
+      where: { collegeId: admin.collegeId },
+    });
+    res.status(200).json(departments);
+  } catch (error) {
+    console.error("Error fetching departments:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
 
 // export const updateStudent = async (req: Request, res: Response) => {
 //   try {

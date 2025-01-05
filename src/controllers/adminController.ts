@@ -260,6 +260,22 @@ export const getAllDepartments = async (req: Request, res: Response) => {
   }
 };
 
+export const addBatch = async (req: Request, res: Response) => {
+  try {
+    const { batchName } = req.body;
+    const admin = (
+      await Admin.findOne({
+        where: { adminId: res.locals.jwtData.adminId },
+      })
+    ).get();
+    const newBatch = await Batch.create({ batchName: batchName, collegeId: admin.collegeId });
+    res.status(201).json(newBatch);
+  } catch (error) {
+    console.error("Error adding batch:", error);
+    res.status(500).json({ errorMessage: "Internal server error." });
+  }
+};
+
 // export const updateStudent = async (req: Request, res: Response) => {
 //   try {
 //     const { rollnumber } = req.params;

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { hash, compare } from "bcrypt";
+import {  compare } from "bcrypt";
 import Interview from "../models/Interview.js";
 import Student from "../models/student.js";
 import multer  from "multer";
@@ -8,10 +8,6 @@ import { promises as fsPromises } from 'fs';
 import InterviewToDepartment from "../models/InterviewToDepartments.js";
 import Resume from "../models/Resume.js";
 import path from "path";
-import EvalMetrics from "../models/EvalMetrics.js";
-import Department from "../models/Department.js";
-import College from "../models/College.js";
-// import { simpleTextGen } from "../Api-helper/helper.js";
 import InterviewInstance from "../models/InterviewInstances.js";
 import InterviewExchange from "../models/InterviewExchanges.js";
 import Feedback from "../models/Feedback.js";

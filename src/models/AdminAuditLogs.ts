@@ -4,14 +4,14 @@ import Admin from './Admin.js';
 
 export interface IAdminAuditLog {
   logId: bigint;
-  teacherId: string;
+  adminId: string;
   ipaddress: string;
   event: string;
 }
 
 class AdminAuditLog extends Model<IAdminAuditLog> implements IAdminAuditLog {
   public logId!: bigint;
-  public teacherId!: string;
+  public adminId!: string;
   public ipaddress!: string;
   public event!: string;
 }
@@ -23,7 +23,7 @@ AdminAuditLog.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    teacherId: {
+    adminId: {
       type: DataTypes.STRING,
       allowNull: false,
       references: {

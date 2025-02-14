@@ -15,7 +15,7 @@ const callOpenAI = async (messages: any[]) => {
         const response = await openai.chat.completions.create({
             // model: 'gpt-4o-mini',
             // model:"llama-3.3-70b-specdec",
-            model:"gpt-4o",
+            model:"gpt-4o-2024-08-06",
             messages,
             max_tokens: 500,
             temperature: 0.7,
@@ -170,14 +170,14 @@ export const provideFinalInterviewFeedback = async (resume_context: string, subj
             role: 'user',
             content: `Based on the following interview exchanges: ${JSON.stringify(interviewExchanges)}, the resume context: (${resume_context}), the subject: (${subject}), and the topic: (${topic}), provide final feedback with key strengths, weaknesses, and a concise summary.
             Format:
-            Strengths: <list specific strengths>
-            Weaknesses: <list specific weaknesses>
-            Summary: <give a short, overall summary of the candidate's performance>
+            Strengths: <list specific strengths> 4-5 points
+            Weaknesses: <list specific weaknesses> 4-5 points
+            Summary: <give a short, overall summary of the candidate's performance> in 5-6 lines.
 
             Ensure that:
             1. Strengths and weaknesses are clearly listed.
             2. The summary is no more than 2-3 sentences.
-            Return the result in JSON format: {"strengths": "<strengths>", "weaknesses": "<weaknesses>", "summary": "<summary>"}.`
+            Return the result in JSON format: {"strengths": ["<strength1>","<strength2>"], "weaknesses": "[<weaknesse1>,<weaknesse2>]", "summary": "<summary>"}.`
         }
     ];
 
